@@ -5,7 +5,9 @@ using UnityEngine;
 public class MovingObstacle : MonoBehaviour {
 
     Rigidbody2D MovingRigidBody;
+    Collider2D WallEdgeCollider;
     public float ActualTime;
+    public bool KillingTrigger = false;
     int ActualSegment;
     public float TimeShift;
     public float LoopTime;
@@ -19,7 +21,13 @@ public class MovingObstacle : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        MovingRigidBody = this.GetComponent<Rigidbody2D>();
+        WallEdgeCollider = this.GetComponent<Collider2D>();
         InitMovingObstacle();
+        if (KillingTrigger)
+        {
+            WallEdgeCollider.isTrigger = true;
+        }
     }
 
     int GetSegment(float time)
@@ -41,7 +49,7 @@ public class MovingObstacle : MonoBehaviour {
     {
         int i;
         float percentage;
-        MovingRigidBody = this.GetComponent<Rigidbody2D>();
+
         ActualTime = TimeShift % (TrackPoints[TrackPoints.Length - 1].Time + LoopTime);
         if (ActualTime < 0)
         {
@@ -71,29 +79,37 @@ public class MovingObstacle : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-
-        if (ActualTime < TrackPoints[TrackPoints.Length - 1].Time && TrackPoints[ActualSegment + 1].Time - ActualTime !=0)
+        if (LoopTime == 0 && ActualTime < TrackPoints[1].Time && !KillingTrigger)
         {
-            MovingRigidBody.velocity = (TrackPoints[ActualSegment + 1].TrackObject.transform.position - MovingRigidBody.transform.position) / (TrackPoints[ActualSegment + 1].Time - ActualTime) * 1000;
-
-            //Debug.Log("TrackPercent " + trackPercent + "Position: " + TrackPoints[ActualSegment].TrackObject.transform.position + (TrackPoints[ActualSegment + 1].TrackObject.transform.position - TrackPoints[ActualSegment].TrackObject.transform.position) * trackPercent);
-            //Debug.Log("Moving With Platform - Speed: " + MovingRigidBody.velocity);
+            WallEdgeCollider.isTrigger = false;
+        }
+        if (ActualTime < TrackPoints[TrackPoints.Length - 1].Time && TrackPoints[ActualSegment + 1].Time - ActualTime != 0)
+        {
+            MovingRigidBody.velocity = (TrackPoints[ActualSegment + 1].TrackObject.transform.position - MovingRigidBody.transform.position) * 1000 / (TrackPoints[ActualSegment + 1].Time - ActualTime);
+            //Debug.Log("ObstacleSegmentVector: " + (TrackPoints[ActualSegment + 1].TrackObject.transform.position - MovingRigidBody.transform.position) * 1000);
         }
         else if (TrackPoints[TrackPoints.Length - 1].Time + LoopTime - ActualTime != 0)
         {
-            MovingRigidBody.velocity = (TrackPoints[0].TrackObject.transform.position - MovingRigidBody.transform.position) / (TrackPoints[TrackPoints.Length - 1].Time + LoopTime - ActualTime) * 1000;
-            //Debug.Log("Looping Segment " + MovingRigidBody);
+            MovingRigidBody.velocity = (TrackPoints[0].TrackObject.transform.position - MovingRigidBody.transform.position) * 1000 / (TrackPoints[TrackPoints.Length - 1].Time + LoopTime - ActualTime);
         }
+
+        //Debug.Log("ActualObstacleVelocity: " + MovingRigidBody.velocity);
+
         ActualTime += Time.deltaTime * 1000;
 
         if (ActualTime > TrackPoints[TrackPoints.Length - 1].Time + LoopTime)
         {
             ActualSegment = 0;
             ActualTime = ActualTime - (TrackPoints[TrackPoints.Length - 1].Time + LoopTime);
-            Debug.Log("EndOfObstacleLoop - time set to: " + ActualTime);
+            //Debug.Log("EndOfObstacleLoop - time set to: " + ActualTime);
             if (LoopTime == 0)
             {
+                //reset position
+                WallEdgeCollider.isTrigger = true;
                 MovingRigidBody.MovePosition(TrackPoints[0].TrackObject.transform.position);
+                UnlinkPlayer();
+                
+
             }
         }
         else if (ActualSegment < TrackPoints.Length - 1 && ActualTime > TrackPoints[ActualSegment + 1].Time)
@@ -103,5 +119,21 @@ public class MovingObstacle : MonoBehaviour {
             //Debug.Log("ActualObstacleTime: " + ActualTime + " ActualSegment: " + ActualSegment);
         }
         //Debug.Log("ObstaclePosition: " + transform.forward * Time.deltaTime);
+    }
+
+    void UnlinkPlayer ()
+    {
+        int i;
+        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Length; i++)
+        {
+            //Debug.Log("UnlinkingParent: " + this.gameObject);
+            //Debug.Log(" LinkedParent: " + MainScript.GetInstance().PlayersToFollow[i].transform.parent);
+
+            if (MainScript.GetInstance().PlayersToFollow[i].transform.parent != null && MainScript.GetInstance().PlayersToFollow[i].transform.parent.gameObject == this.gameObject)
+            {
+                MainScript.GetInstance().PlayersToFollow[i].SetJump();
+                //Debug.Log("Unlink Successful");
+            }
+        }
     }
 }

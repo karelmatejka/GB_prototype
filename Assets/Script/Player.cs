@@ -109,14 +109,17 @@ public class Player : MonoBehaviour
 
         GetControls();
 
-        Vector2 dir = CheckGravityAround().normalized * GravityConstant;
+        Vector2 dir = ComputedGravityVector.normalized * GravityConstant;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        //transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(angle, Vector3.forward), 0.1f);
 
-        cross = Vector3.Cross(dir, ProjectedVectorToSurface(lastjoypad, dir));
 
-        transform.localScale = new Vector3(transform.localScale.x, Mathf.Sign(cross.z) * transform.localScale.x, transform.localScale.z);
+        /*--follow move direction--*/
+        //cross = Vector3.Cross(dir, ProjectedVectorToSurface(lastjoypad, dir));
+        //transform.localScale = new Vector3(transform.localScale.x, Mathf.Sign(cross.z) * transform.localScale.x, transform.localScale.z);
 
+        setAnimState();
     }
 
     void FixedUpdate()
@@ -140,14 +143,16 @@ public class Player : MonoBehaviour
 
             Debug.DrawRay(this.transform.position, movementVector/1000);
 
+            //Debug.Log("MovementVector: " + movementVector + " Gravity: " + ComputedGravityVector);
+
             PlayerRigidBody.AddForce(movementVector * delta);
             LastMovementVector = movementVector;
             
-            Shadow.SetActive(true);
+            //Shadow.SetActive(true);
         }
         else
         {
-            Shadow.SetActive(false);
+            //Shadow.SetActive(false);
             if (Jumping)
             {
                 gravityMultiplier = JumpGravityReductionConstant;
@@ -181,15 +186,18 @@ public class Player : MonoBehaviour
             PlayerRigidBody.velocity = PlayerRigidBody.velocity.normalized * MaxSpeedConstant * 300;
         }
 
-        /*Debug.Log("Player Velocity: " + PlayerRigidBody.velocity.magnitude);
-        if (PlayerRigidBody.velocity.magnitude < 0.1)
-        {
-            PlayerRigidBody.velocity = Vector2.zero;
-        }*/
+        //Debug.Log("Player Velocity: " + PlayerRigidBody.velocity.magnitude);
 
         ActualGravity = ComputedGravityVector.normalized * GravityConstant * gravityMultiplier;
 
         Physics2D.gravity = ActualGravity;
+        Physics.gravity = ActualGravity.normalized * 10;
+
+        if (PlayerInCollision && joypad == Vector2.zero)
+        {
+            PlayerRigidBody.velocity = Vector2.zero;
+            Physics2D.gravity = Vector2.zero;
+        }
 
         Debug.DrawRay(this.transform.position, ActualGravity);
 
@@ -199,18 +207,9 @@ public class Player : MonoBehaviour
             if /*(PlayerInCollision)*/(!Jumping)
             {
                 //jump
-
                 PlayerRigidBody.AddForce(-ActualGravity.normalized * JumpConstant);
-
                 Debug.DrawRay(this.transform.position, -ActualGravity.normalized * JumpConstant);
-
-                Debug.Log("Jump");
-                Jumping = true;
-                Walking = false;
-                PlayerInCollision = false;
-                SetWallCollidersActive(true, null);
-                PlayerAnim.SetTrigger("Jump");
-                this.transform.SetParent(null);
+                SetJump();
             }
         }
 
@@ -220,7 +219,17 @@ public class Player : MonoBehaviour
         }
 
         Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, CameraAreaScript.GetCameraPos(), ref velocity, 0.2f);
-        setAnimState();
+    }
+
+    public void SetJump()
+    {
+        Debug.Log("Jump");
+        Jumping = true;
+        Walking = false;
+        PlayerInCollision = false;
+        SetWallCollidersActive(true, null);
+        PlayerAnim.SetTrigger("Jump");
+        this.transform.SetParent(null);
     }
 
     void SetWallCollidersActive(bool active, WallCollider stayActive)
@@ -246,7 +255,11 @@ public class Player : MonoBehaviour
 
     void setAnimState()
     {
-        if (Jumping) return;
+        if (Jumping && !PlayerInCollision)
+        {
+            return;
+        }
+        
 
         if (Walking && joypad.magnitude < 0.1)
         {
@@ -270,10 +283,11 @@ public class Player : MonoBehaviour
             this.transform.SetParent(coll.gameObject.transform);
             SetWallCollidersActive(false, AttachedObject);
             ComputedGravityVector = -coll.contacts[0].normal * GravityConstant;
-            //Debug.Log("New Collision" + coll.gameObject.transform);
-            //setAnimState();
-            Jumping = false;
+            Debug.Log("New Collision: " + coll.gameObject.transform);
             PlayerInCollision = true;
+            setAnimState();
+            Jumping = false;
+            
         }
     }
     
@@ -306,11 +320,11 @@ public class Player : MonoBehaviour
             RaycastHit2D[] hit;
             if (Jumping)
             {
-                hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)));
+                hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)),5);
             }
             else
             {
-                hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)), 1);
+                hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)), 2);
             }
 
             if (hit.Length > 0)
@@ -368,6 +382,9 @@ public class Player : MonoBehaviour
 
         //Debug.Log("Sum of Gravity:" + SumOfGravity);
 
+        if (SumOfGravity == Vector2.zero)
+            return ComputedGravityVector;
+
         return SumOfGravity;
 
         /*
@@ -389,7 +406,6 @@ public class Player : MonoBehaviour
         if (joypad.magnitude >= 0.1)
         {
             lastjoypad = joypad;
-            //Walking = true;
             //Debug.Log("WalkingSet");
         } else
         {

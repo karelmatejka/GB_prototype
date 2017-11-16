@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class CameraArea : MonoBehaviour
 {
-    Player[] PlayersToFollow;
-
     float CamVertExtent;
     float CamHorzExtent;
     Vector2 BottomLeft;
@@ -15,15 +13,7 @@ public class CameraArea : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        int i;
-        GameObject[] go;
-
-        go = GameObject.FindGameObjectsWithTag("PlayerEnvelope");
-        PlayersToFollow = new Player[go.Length];
-        for (i = 0; i < go.Length; i++)
-        {
-            PlayersToFollow[i] = go[i].GetComponent<Player>();
-        }
+        MainScript.GetInstance();
 
         CamVertExtent = Camera.main.orthographicSize;
         CamHorzExtent = Camera.main.aspect * CamVertExtent;
@@ -53,11 +43,11 @@ public class CameraArea : MonoBehaviour
         int i;
         Vector3 position = Vector3.zero;
        
-        for (i = 0; i < PlayersToFollow.Length; i++)
+        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Length; i++)
         {
-            position = position + PlayersToFollow[i].transform.position;
+            position = position + MainScript.GetInstance().PlayersToFollow[i].transform.position;
         }
-        position = position / PlayersToFollow.Length;
+        position = position / MainScript.GetInstance().PlayersToFollow.Length;
         position.z = -10;
 
         //Camera.main.CalculateFrustumCorners
@@ -68,10 +58,5 @@ public class CameraArea : MonoBehaviour
         if (position.y > TopRight.y) position.y = TopRight.y;
 
         return position;
-
-        //Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, position, ref velocity, 0.7f);
-
-        //Camera.main.transform.position = Camera.main.transform.position + (position - Camera.main.transform.position) * 4 * Time.deltaTime;
-        //Camera.main.transform.position = position;
     }
 }
