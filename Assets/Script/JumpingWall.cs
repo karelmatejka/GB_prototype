@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WallCollider : MonoBehaviour {
+public class JumpingWall : MonoBehaviour {
 
     public Collider2D[] WallEdgeCollider;
-    public bool Disappears;
     public Rigidbody2D WallRigidBody;
 
     // Use this for initialization
@@ -39,7 +38,7 @@ public class WallCollider : MonoBehaviour {
                 /*c = WallImage.color;
                 c.a = 0.25f;
                 WallImage.color = c;*/
-                if (Disappears) WallEdgeCollider[i].isTrigger = true;
+                WallEdgeCollider[i].isTrigger = true;
                 //Debug.Log("Deactivate: " + WallRect);
             }
         }

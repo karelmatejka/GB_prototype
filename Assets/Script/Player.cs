@@ -10,14 +10,12 @@ public class Player : MonoBehaviour
     {
         public float distance;
         public Vector2 gravity;
-        public WallCollider wallCollider;
     }
 
     public Animator PlayerAnim;
     public GameObject Shadow;
-    public WallCollider[] WallColiders;
+    public JumpingWall[] JumpingWalls;
 
-    public WallCollider AttachedObject;
     CameraArea CameraAreaScript;
 
     public Image PlayerImage;
@@ -56,11 +54,11 @@ public class Player : MonoBehaviour
 
         CameraAreaScript = GameObject.FindObjectOfType(typeof(CameraArea)) as CameraArea;
 
-        go = GameObject.FindGameObjectsWithTag("WallColliders");
-        WallColiders = new WallCollider[go.Length];
+        go = GameObject.FindGameObjectsWithTag("JumpingColliders");
+        JumpingWalls = new JumpingWall[go.Length];
         for (i = 0; i < go.Length; i++)
         {
-            WallColiders[i] = go[i].GetComponent<WallCollider>();
+            JumpingWalls[i] = go[i].GetComponent<JumpingWall>();
         }
 
         ActualGravity.x = 0;
@@ -82,11 +80,8 @@ public class Player : MonoBehaviour
         PlayerRigidBody = this.GetComponent<Rigidbody2D>();
         PlayerImage = this.GetComponent<Image>();
 
-        SetWallCollidersActive(true, null);
+        SetJumpingWallCollidersActive(true, null);
     }
-
-    // Update is called once per frame
-
 
     Vector2 ProjectedVectorToSurface(Vector2 direction, Vector2 gravity)
     {
@@ -195,8 +190,11 @@ public class Player : MonoBehaviour
 
         if (PlayerInCollision && joypad == Vector2.zero)
         {
-            PlayerRigidBody.velocity = Vector2.zero;
-            Physics2D.gravity = Vector2.zero;
+            if (PlayerRigidBody.transform.parent != null && PlayerRigidBody.transform.parent.tag != "MovingColliders")
+            {
+                PlayerRigidBody.velocity = Vector2.zero;
+                Physics2D.gravity = Vector2.zero;
+            }
         }
 
         Debug.DrawRay(this.transform.position, ActualGravity);
@@ -213,9 +211,9 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (AttachedObject != null && AttachedObject.WallRigidBody != null && !Jumping)
+        if (PlayerRigidBody.transform.parent != null && PlayerRigidBody.transform.parent.tag == "MovingColliders" && !Jumping)
         {
-            PlayerRigidBody.velocity += AttachedObject.WallRigidBody.velocity;
+            PlayerRigidBody.velocity += PlayerRigidBody.transform.parent.GetComponent<MovingObstacle>().MovingRigidBody.velocity;
         }
 
         Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, CameraAreaScript.GetCameraPos(), ref velocity, 0.2f);
@@ -227,31 +225,22 @@ public class Player : MonoBehaviour
         Jumping = true;
         Walking = false;
         PlayerInCollision = false;
-        SetWallCollidersActive(true, null);
+        SetJumpingWallCollidersActive(true, null);
         PlayerAnim.SetTrigger("Jump");
         this.transform.SetParent(null);
+        Debug.Log("Jump Set");
     }
 
-    void SetWallCollidersActive(bool active, WallCollider stayActive)
+    void SetJumpingWallCollidersActive(bool active, JumpingWall stayActive)
     {
         int i;
-        for (i = 0; i < WallColiders.Length; i++)
+        for (i = 0; i < JumpingWalls.Length; i++)
         {
             //Debug.Log("Stay Active Colider: " + stayActive.gameObject);
-            if (stayActive != WallColiders[i])
-                WallColiders[i].ActivateWall(active);
+            if (stayActive != JumpingWalls[i])
+                JumpingWalls[i].ActivateWall(active);
         }
     }
-
-    /*    void OnCollisionExit2D(Collision2D coll)
-        {
-
-            if (coll.gameObject == AttachedObject.gameObject)
-            {
-                PlayerInCollision = false;
-            }
-        }
-    */
 
     void setAnimState()
     {
@@ -277,30 +266,33 @@ public class Player : MonoBehaviour
 
     void OnCollisionStay2D(Collision2D coll)
     {
-        if ((AttachedObject == null || coll.gameObject != AttachedObject.gameObject || Jumping) && ButtonFire == 0)
+        //if ((Jumping && ButtonFire == 0) || coll.transform.tag == "MovingColliders")
+        if ((coll.transform.tag == "JumpingColliders" && ButtonFire > 0) || (coll.transform.tag == "FallingAppartColliders" && coll.gameObject.GetComponent<FallingAppartObstacle>().ActualSegment == -1))
         {
-            AttachedObject = coll.gameObject.GetComponent<WallCollider>();
-            this.transform.SetParent(coll.gameObject.transform);
-            SetWallCollidersActive(false, AttachedObject);
-            ComputedGravityVector = -coll.contacts[0].normal * GravityConstant;
-            Debug.Log("New Collision: " + coll.gameObject.transform);
-            PlayerInCollision = true;
-            setAnimState();
-            Jumping = false;
-            
+            return;
         }
+        
+        //AttachedObject = coll.gameObject.GetComponent<WallCollider>();
+        this.transform.SetParent(coll.gameObject.transform);
+        if (coll.gameObject.tag == "JumpingColliders")
+        {
+            SetJumpingWallCollidersActive(false, coll.gameObject.GetComponent<JumpingWall>());
+        }
+        ComputedGravityVector = -coll.contacts[0].normal * GravityConstant;
+
+        //Debug.Log("New Collision: " + coll.gameObject.transform);
+
+        PlayerInCollision = true;
+        setAnimState();
+        Jumping = false;
+            
+        
     }
     
-    /*void OnCollisionEnter2D(Collision2D coll)
-    {
-        setAnimState();
-    }*/
-    
-
     Vector2 CheckGravityAround()
     {
         int i;
-        bool foundAttachedObject;
+        
         float radian;
         Vector2 distanceVector;
         float sumOfDistances;
@@ -333,32 +325,15 @@ public class Player : MonoBehaviour
 
                 Debug.DrawRay(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)) * 10, Color.green);
 
-                foundAttachedObject = false;
+                Debug.DrawLine(new Vector3(hit[0].point.x, hit[0].point.y - 1, 0), new Vector3(hit[0].point.x, hit[0].point.y + 1, 0), Color.red, Time.deltaTime, false);
+                Debug.DrawLine(new Vector3(hit[0].point.x - 1, hit[0].point.y, 0), new Vector3(hit[0].point.x + 1, hit[0].point.y, 0), Color.red, Time.deltaTime, false);
 
-                if (AttachedObject != null)
-                {
-                    if (hit[0].collider.gameObject == AttachedObject.gameObject)
-                    {
-                        foundAttachedObject = true;
-                    }
-                }
+                distanceVector = hit[0].point - new Vector2(this.transform.position.x, this.transform.position.y);
+                impactPoints[i].distance = distanceVector.magnitude;
+                impactPoints[i].gravity = -hit[0].normal;
 
-                //if (Jumping/* || foundAttachedObject || AttachedObject == null*/)
-                //{
-                    Debug.DrawLine(new Vector3(hit[0].point.x, hit[0].point.y - 1, 0), new Vector3(hit[0].point.x, hit[0].point.y + 1, 0), Color.red, Time.deltaTime, false);
-                    Debug.DrawLine(new Vector3(hit[0].point.x - 1, hit[0].point.y, 0), new Vector3(hit[0].point.x + 1, hit[0].point.y, 0), Color.red, Time.deltaTime, false);
-
-                    distanceVector = hit[0].point - new Vector2(this.transform.position.x, this.transform.position.y);
-                    impactPoints[i].distance = distanceVector.magnitude;
-                    impactPoints[i].gravity = -hit[0].normal;
-                    impactPoints[i].wallCollider = hit[0].collider.gameObject.GetComponent<WallCollider>();
-
-                    sumOfDistances = sumOfDistances + (1 / (impactPoints[i].distance * impactPoints[i].distance * impactPoints[i].distance * impactPoints[i].distance));
-                /*}
-                else
-                {
-                    impactPoints[i].distance = -1;
-                }*/
+                sumOfDistances = sumOfDistances + (1 / (impactPoints[i].distance * impactPoints[i].distance * impactPoints[i].distance * impactPoints[i].distance));
+                
             }
             else
             {
@@ -386,16 +361,6 @@ public class Player : MonoBehaviour
             return ComputedGravityVector;
 
         return SumOfGravity;
-
-        /*
-        Vector3 hit3d = Vector3.zero;
-        hit3d.x = hit.point.x;
-        hit3d.y = hit.point.y;*/
-
-
-
-
-        //Line[i].SetPosition(1, hit.point);
     }
 
     void SetControlValues()

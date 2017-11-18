@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class MovingObstacle : MonoBehaviour {
 
-    Rigidbody2D MovingRigidBody;
-    Collider2D WallEdgeCollider;
+    public Rigidbody2D MovingRigidBody;
+    List<Collider2D> WallEdgeColliders;
     public float ActualTime;
-    public bool KillingTrigger = false;
+    bool KillingTrigger = false;
     int ActualSegment;
     public float TimeShift;
     public float LoopTime;
@@ -19,15 +19,44 @@ public class MovingObstacle : MonoBehaviour {
     }
     public TrackPoint[] TrackPoints;
 
-	// Use this for initialization
-	void Start () {
+    bool playerInBounds;
+
+    // Use this for initialization
+    void Start () {
+        int i;
+
         MovingRigidBody = this.GetComponent<Rigidbody2D>();
-        WallEdgeCollider = this.GetComponent<Collider2D>();
-        InitMovingObstacle();
-        if (KillingTrigger)
+
+        if (this.GetComponent<PlayerKiller>() != null)
         {
-            WallEdgeCollider.isTrigger = true;
+            KillingTrigger = true;
         }
+
+        WallEdgeColliders = new List<Collider2D>();
+        for (i = 0; i < this.transform.childCount; i++)
+        {
+            if (this.transform.GetChild(i).GetComponent<Collider2D>() != null)
+            {
+                WallEdgeColliders.Add(this.transform.GetChild(i).GetComponent<Collider2D>());
+            }
+
+            if (KillingTrigger)
+            {
+                WallEdgeColliders[i].isTrigger = true;
+            }
+        }
+        if (this.GetComponent<Collider2D>() != null)
+        {
+            WallEdgeColliders.Add(this.GetComponent<Collider2D>());
+            if (KillingTrigger)
+            {
+                WallEdgeColliders[WallEdgeColliders.Count-1].isTrigger = true;
+            }
+        }
+
+
+        InitMovingObstacle();
+        
     }
 
     int GetSegment(float time)
@@ -76,12 +105,27 @@ public class MovingObstacle : MonoBehaviour {
 
     }
 
+    void SetTrigger(bool trigger)
+    {
+        int i;
+        for (i = 0; i < WallEdgeColliders.Count; i++)
+        {
+            WallEdgeColliders[i].isTrigger = trigger;
+        }
+
+    }
+
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-        if (LoopTime == 0 && ActualTime < TrackPoints[1].Time && !KillingTrigger)
+        if (LoopTime == 0 && ActualTime < TrackPoints[TrackPoints.Length - 1].Time && !KillingTrigger)
         {
-            WallEdgeCollider.isTrigger = false;
+            //Debug.Log("Is Player Inside moving object: " + playerInBounds); 
+            if (!playerInBounds)
+            {
+                SetTrigger(false);
+            }
+            
         }
         if (ActualTime < TrackPoints[TrackPoints.Length - 1].Time && TrackPoints[ActualSegment + 1].Time - ActualTime != 0)
         {
@@ -105,9 +149,10 @@ public class MovingObstacle : MonoBehaviour {
             if (LoopTime == 0)
             {
                 //reset position
-                WallEdgeCollider.isTrigger = true;
-                MovingRigidBody.MovePosition(TrackPoints[0].TrackObject.transform.position);
+                SetTrigger(true);
                 UnlinkPlayer();
+                MovingRigidBody.MovePosition(TrackPoints[0].TrackObject.transform.position);
+                
                 
 
             }
@@ -132,8 +177,25 @@ public class MovingObstacle : MonoBehaviour {
             if (MainScript.GetInstance().PlayersToFollow[i].transform.parent != null && MainScript.GetInstance().PlayersToFollow[i].transform.parent.gameObject == this.gameObject)
             {
                 MainScript.GetInstance().PlayersToFollow[i].SetJump();
-                //Debug.Log("Unlink Successful");
+                Debug.Log("Unlink Successful");
             }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D coll)
+    {
+        //Debug.Log("Rigid body inside moving object: " + coll.tag);
+        if (coll.tag == "PlayerEnvelope")
+        {
+            playerInBounds = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D coll)
+    {
+        if (coll.tag == "PlayerEnvelope")
+        {
+            playerInBounds = false;
         }
     }
 }

@@ -34,15 +34,6 @@ public class MainScript : MonoBehaviour {
             PlayersToFollow[i] = go[i].GetComponent<Player>();
             PlayersToFollow[i].transform.position = levelDefinitionScript.StartingPosition.transform.position;
         }
-
-        
-
-
-
-        /*LevelLoaded = false;
-        PlayerShipInstance = Instantiate(PlayerShipPrefab, Vector3.zero, Quaternion.identity) as ShipController;
-        PlayerShipInstance.gameObject.SetActive(false);
-        GuiInstance = Instantiate(GuiPrefab) as GUInterface;*/
     }
 
     public void RestartLevel(Player player)

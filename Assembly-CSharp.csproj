@@ -50,13 +50,14 @@
      <Compile Include="Assets\Script\AdvancedPolygonColliderUtilities.cs" />
      <Compile Include="Assets\Script\CameraArea.cs" />
      <Compile Include="Assets\Script\Coin.cs" />
+     <Compile Include="Assets\Script\FallingAppartObstacle.cs" />
+     <Compile Include="Assets\Script\JumpingWall.cs" />
      <Compile Include="Assets\Script\LevelDefinition.cs" />
      <Compile Include="Assets\Script\MainScript.cs" />
      <Compile Include="Assets\Script\MovingObstacle.cs" />
      <Compile Include="Assets\Script\Paralax.cs" />
      <Compile Include="Assets\Script\Player.cs" />
      <Compile Include="Assets\Script\PlayerKiller.cs" />
-     <Compile Include="Assets\Script\WallCollider.cs" />
      <None Include="Assets\AdvancedPolygonCollider\Readme.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
