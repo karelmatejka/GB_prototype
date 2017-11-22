@@ -39,7 +39,7 @@ public class FallingAppartObstacle : MonoBehaviour {
         if (ActualSegment == -1)
         {
             ActualTime += Time.deltaTime * 1000;
-            Debug.Log("Is player Inside falling appart object: " + playerInBounds);
+            //Debug.Log("Is player Inside falling appart object: " + playerInBounds);
             if (!playerInBounds && ActualTime > ReappearTime && Reappear)
             {
                 InitFallingAppartObstacle();
@@ -89,8 +89,11 @@ public class FallingAppartObstacle : MonoBehaviour {
 
         for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Length; i++)
         {
-            MainScript.GetInstance().PlayersToFollow[i].SetJump();
-            Debug.Log("Unlink Successful");
+            if (MainScript.GetInstance().PlayersToFollow[i].transform.parent != null && MainScript.GetInstance().PlayersToFollow[i].transform.parent.gameObject == this.gameObject)
+            {
+                MainScript.GetInstance().PlayersToFollow[i].SetJump();
+                //Debug.Log("Unlink Successful: " + MainScript.GetInstance().PlayersToFollow[i].transform.parent.gameObject);
+            }
         }
     }
 
@@ -111,7 +114,7 @@ public class FallingAppartObstacle : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D coll)
     {
-        Debug.Log("Rigid body inside moving object: " + coll.tag);
+        //Debug.Log("Rigid body inside moving object: " + coll.tag);
         if (coll.tag == "PlayerEnvelope")
         {
             playerInBounds = true;
