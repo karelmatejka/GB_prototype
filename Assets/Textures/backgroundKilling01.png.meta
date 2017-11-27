@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 2328e7dcecb77ec4dabb6284491ae22b
-timeCreated: 1511374039
+timeCreated: 1511808495
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -978,10 +978,10 @@ TextureImporter:
       name: backgroundKilling01_64
       rect:
         serializedVersion: 2
-        x: 41
-        y: 776
-        width: 20
-        height: 112
+        x: 26
+        y: 768
+        width: 35
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

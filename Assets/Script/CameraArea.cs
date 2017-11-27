@@ -7,7 +7,7 @@ public class CameraArea : MonoBehaviour
 {
     float CamVertExtent;
     float CamHorzExtent;
-    float defaultCamSize = 30;
+    float defaultCamSize = 25;
     Vector2 BottomLeftRect;
     Vector2 TopRightRect;
     public Collider2D BoundingBoxCollider;
