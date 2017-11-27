@@ -45,41 +45,48 @@ public class Player : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        InitPlayer();
+        InitPlayer(true);
     }
 
-    void InitPlayer()
+    public void InitPlayer(bool firstInit)
     {
         int i;
         GameObject[] go;
 
-        CameraAreaScript = GameObject.FindObjectOfType(typeof(CameraArea)) as CameraArea;
-
-        go = GameObject.FindGameObjectsWithTag("JumpingColliders");
-        JumpingWalls = new JumpingWall[go.Length];
-        for (i = 0; i < go.Length; i++)
+        if (firstInit)
         {
-            JumpingWalls[i] = go[i].GetComponent<JumpingWall>();
+            CameraAreaScript = GameObject.FindObjectOfType(typeof(CameraArea)) as CameraArea;
+
+            go = GameObject.FindGameObjectsWithTag("JumpingColliders");
+            JumpingWalls = new JumpingWall[go.Length];
+            for (i = 0; i < go.Length; i++)
+            {
+                JumpingWalls[i] = go[i].GetComponent<JumpingWall>();
+            }
+
+            SpeedConstant = 17;
+            GravityConstant = 80f;
+            JumpConstant = 31;
+            MaxSpeed = 40;
+            MaxTrackingRays = 128;
+            JumpingTimeMinus = -0.20f;
+
+            PlayerRigidBody = this.GetComponent<Rigidbody2D>();
+            PlayerImage = this.GetComponent<Image>();
         }
-
-        ActualGravity.x = 0;
-        ActualGravity.y = 0;
-        MaxTrackingRays = 128;
-        SpeedConstant = 14;
-        GravityConstant = 60f;
-        JumpConstant = 23;
-        MaxSpeed = 30;
-
+        
+        ActualGravity = Vector2.zero;
+        GravityAndJump = Vector2.zero;
         ComputedGravityVector = Vector2.down * GravityConstant;
 
         PlayerInCollision = false;
         Jumping = true;
-        JumpingTimeMinus = -0.25f;
+        
         JumpingTime = JumpingTimeMinus;
         Walking = false;
-
-        PlayerRigidBody = this.GetComponent<Rigidbody2D>();
-        PlayerImage = this.GetComponent<Image>();
+        joypad = Vector2.zero;
+        lastjoypad = Vector2.zero;
+        ButtonFire = 0;
 
         SetJumpingWallCollidersActive(true, null);
     }
@@ -107,8 +114,8 @@ public class Player : MonoBehaviour
 
         Vector2 dir = ComputedGravityVector.normalized * GravityConstant;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        //transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(angle, Vector3.forward), Time.deltaTime*20);
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(angle, Vector3.forward), Time.deltaTime*20);
 
 
         /*--follow move direction--*/
@@ -191,11 +198,11 @@ public class Player : MonoBehaviour
         {
             ActualGravity = ComputedGravityVector.normalized * GravityConstant * delta;
         }
-
+        
         if (Jumping)
         {
             JumpingTime += delta;
-            GravityAndJump += ActualGravity * (1 + JumpingTime* JumpingTime * 5);
+            GravityAndJump += ActualGravity * (1 + JumpingTime* JumpingTime * 7);
             movementVector = (joypad * SpeedConstant)*0.3f + ProjectedVectorToSurface(joypad, ComputedGravityVector) * SpeedConstant * 0.6f;
             //movementVector = ProjectedVectorToSurface(joypad, ComputedGravityVector) * SpeedConstant;
         }
@@ -337,6 +344,7 @@ public class Player : MonoBehaviour
         float radian;
         Vector2 distanceVector;
         float sumOfDistances;
+        float radius;
 
         Vector2 SumOfGravity;
 
@@ -353,24 +361,30 @@ public class Player : MonoBehaviour
             RaycastHit2D[] hit;
             if (Jumping)
             {
-                if (JumpingTime > 0)
+                if (JumpingTime > 0.14f && JumpingTime <0.6f)
                 {
-                    hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)), 1 + JumpingTime * JumpingTime * 30);
-                } else
+                    radius = 1.8f;
+                }
+                else if (JumpingTime >= 0.5f)
                 {
-                    hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)), 0.1f);
+                    radius = 1.2f + JumpingTime * JumpingTime * 20;
+                }
+                else
+                {
+                    radius = 0.1f;
                 }
             }
             else
             {
-                hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)), 2);
+                radius = 2;
             }
+
+            hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)), radius);
+            Debug.DrawRay(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)) * radius, Color.green);
 
             if (hit.Length > 0 && hit[0].transform.tag != "PlayerEnvelope")
             {
                 ////Debug.Log("Hit:" + impactPoints[i].wallCollider);
-
-                //Debug.DrawRay(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)) * 10, Color.green);
 
                 Debug.DrawLine(new Vector3(hit[0].point.x, hit[0].point.y - 1, 0), new Vector3(hit[0].point.x, hit[0].point.y + 1, 0), Color.red, Time.deltaTime, false);
                 Debug.DrawLine(new Vector3(hit[0].point.x - 1, hit[0].point.y, 0), new Vector3(hit[0].point.x + 1, hit[0].point.y, 0), Color.red, Time.deltaTime, false);

@@ -1,28 +1,114 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CameraArea : MonoBehaviour
 {
     float CamVertExtent;
     float CamHorzExtent;
-    Vector2 BottomLeft;
-    Vector2 TopRight;
+    float defaultCamSize = 30;
+    Vector2 BottomLeftRect;
+    Vector2 TopRightRect;
     public Collider2D BoundingBoxCollider;
 
     // Use this for initialization
     void Start ()
     {
         MainScript.GetInstance();
+        CamVertExtent = defaultCamSize;
+        BottomLeftRect = BoundingBoxCollider.bounds.min;
+        TopRightRect = BoundingBoxCollider.bounds.max;
 
-        CamVertExtent = Camera.main.orthographicSize;
-        CamHorzExtent = Camera.main.aspect * CamVertExtent;
-        Debug.Log(CamHorzExtent + ", " + CamVertExtent);
+        Debug.Log("Cropping camera bounding box: " + BottomLeftRect + ", " + TopRightRect);
+    }
 
-        BottomLeft = BoundingBoxCollider.bounds.min;
+    public Vector3 GetCameraPos()
+    {
+        int i;
+        Vector2 MaxDistance = Vector3.zero;
+        Vector2 NewCamRectangle = Vector3.zero;
+        Vector2 BottomLeft;
+        Vector2 TopRight;
+        List <float> x;
+        List <float> y;
+        x = new List<float>();
+        y = new List<float>();
+
+        Vector3 position = Vector3.zero;
+
+        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Length; i++)
+        {
+            position = position + MainScript.GetInstance().PlayersToFollow[i].transform.position;
+
+            x.Add(MainScript.GetInstance().PlayersToFollow[i].transform.position.x);
+            y.Add(MainScript.GetInstance().PlayersToFollow[i].transform.position.y);
+
+            //Debug.Log("Player Position[" + i + "]: " + x[i] + ", " + y[i]);
+
+        }
+        MaxDistance.x = (x.Max() - x.Min()) / 2 + 12;
+        MaxDistance.y = (y.Max() - y.Min()) / 2 + 12;
+        Debug.Log("Max Distance Distance Between Players: " + MaxDistance + " Players: " + x.Count);
+
+        if (MaxDistance.y > defaultCamSize)
+        {
+            NewCamRectangle.y = MaxDistance.y;
+            if (NewCamRectangle.y > (TopRightRect.y - BottomLeftRect.y) / 2)
+            {
+                NewCamRectangle.y = (TopRightRect.y - BottomLeftRect.y) / 2;
+            }
+
+            NewCamRectangle.x = NewCamRectangle.y * Camera.main.aspect;
+
+            if (NewCamRectangle.x > (TopRightRect.x - BottomLeftRect.x) / 2)
+            {
+                NewCamRectangle.x = (TopRightRect.x - BottomLeftRect.x) / 2;
+                NewCamRectangle.y = NewCamRectangle.x / Camera.main.aspect;
+                Debug.Log("Camera Vertically cropped");
+            }
+        } else
+        {
+            NewCamRectangle.y = defaultCamSize;
+            NewCamRectangle.x = Camera.main.aspect * NewCamRectangle.y;
+        }
+        
+        
+
+        if (MaxDistance.x > defaultCamSize * Camera.main.aspect && NewCamRectangle.y >= defaultCamSize)
+        {
+            NewCamRectangle.x = MaxDistance.x;
+            if (NewCamRectangle.x > (TopRightRect.x - BottomLeftRect.x) / 2)
+            {
+                NewCamRectangle.x = (TopRightRect.x - BottomLeftRect.x) / 2;
+            }
+            NewCamRectangle.y = NewCamRectangle.x / Camera.main.aspect;
+
+            if (NewCamRectangle.y > (TopRightRect.y - BottomLeftRect.y) / 2 && NewCamRectangle.y > defaultCamSize)
+            {
+                NewCamRectangle.y = (TopRightRect.y - BottomLeftRect.y) / 2;
+                NewCamRectangle.x = NewCamRectangle.x * Camera.main.aspect;
+                Debug.Log("Camera Vertically cropped");
+            }
+        }
+
+        //NewCamRectangle.y = defaultCamSize;
+
+        //CamVertExtent = Camera.main.orthographicSize + (Camera.main.orthographicSize - NewCamRectangle.y) * Time.deltaTime;
+        CamVertExtent = NewCamRectangle.y;
+        Debug.Log("Camera size: " + CamVertExtent);
+        Camera.main.orthographicSize = CamVertExtent;
+        CamHorzExtent = Camera.main.aspect * Camera.main.orthographicSize;
+
+        position = position / MainScript.GetInstance().PlayersToFollow.Length;
+        position.z = -10;
+
+        BottomLeft = BottomLeftRect;
+        TopRight = TopRightRect;
+
         BottomLeft.x = BottomLeft.x + CamHorzExtent;
         BottomLeft.y = BottomLeft.y + CamVertExtent;
-        TopRight = BoundingBoxCollider.bounds.max;
+        
         TopRight.x = TopRight.x - CamHorzExtent;
         TopRight.y = TopRight.y - CamVertExtent;
         if (TopRight.x < BottomLeft.x)
@@ -35,20 +121,7 @@ public class CameraArea : MonoBehaviour
             TopRight.y = BoundingBoxCollider.bounds.center.y;
             BottomLeft.y = TopRight.y;
         }
-        Debug.Log(BottomLeft + ", " + TopRight);
-    }
-
-    public Vector3 GetCameraPos()
-    {
-        int i;
-        Vector3 position = Vector3.zero;
-       
-        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Length; i++)
-        {
-            position = position + MainScript.GetInstance().PlayersToFollow[i].transform.position;
-        }
-        position = position / MainScript.GetInstance().PlayersToFollow.Length;
-        position.z = -10;
+        
 
         //Camera.main.CalculateFrustumCorners
 

@@ -85,7 +85,7 @@ public class MovingObstacle : MonoBehaviour {
             ActualTime = TrackPoints[TrackPoints.Length - 1].Time + LoopTime + ActualTime;
         }
         ActualSegment = GetSegment(ActualTime);
-        //Debug.Log("StartingObstacleTime: " + ActualTime + " Segment: " + ActualSegment);
+        Debug.Log("StartingObstacleTime: " + ActualTime + ", Segment: " + ActualSegment + ", Segments: " + TrackPoints.Length);
 
         for (i = 0; i < TrackPoints.Length; i++)
         {
@@ -152,15 +152,18 @@ public class MovingObstacle : MonoBehaviour {
                 SetTrigger(true);
                 UnlinkPlayer();
                 MovingRigidBody.MovePosition(TrackPoints[0].TrackObject.transform.position);
-                
-                
 
+
+
+            } else
+            {
+                MovingRigidBody.MovePosition(TrackPoints[ActualSegment].TrackObject.transform.position);
             }
         }
         else if (ActualSegment < TrackPoints.Length - 1 && ActualTime > TrackPoints[ActualSegment + 1].Time)
         {
             ActualSegment += 1;
-            
+            MovingRigidBody.MovePosition(TrackPoints[ActualSegment].TrackObject.transform.position);
             //Debug.Log("ActualObstacleTime: " + ActualTime + " ActualSegment: " + ActualSegment);
         }
         //Debug.Log("ObstaclePosition: " + transform.forward * Time.deltaTime);

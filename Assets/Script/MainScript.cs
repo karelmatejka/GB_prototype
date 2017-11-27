@@ -32,13 +32,16 @@ public class MainScript : MonoBehaviour {
         for (i = 0; i < go.Length; i++)
         {
             PlayersToFollow[i] = go[i].GetComponent<Player>();
-            PlayersToFollow[i].transform.position = levelDefinitionScript.StartingPosition.transform.position;
+            //PlayersToFollow[i].transform.position = levelDefinitionScript.StartingPosition.transform.position;
+            RestartLevel(PlayersToFollow[i]);
         }
     }
 
     public void RestartLevel(Player player)
     {
-        player.transform.position = levelDefinitionScript.StartingPosition.transform.position;
+        player.transform.position = levelDefinitionScript.StartingPosition.transform.position - Vector3.right * 1 + Vector3.right * 2 * (player.ControllerIndex - 1);
+        Debug.Log("Player Starting Position: " + player.transform.position);
+        player.InitPlayer(false);
         player.SetJump();
     }
 
