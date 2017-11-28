@@ -260,7 +260,7 @@ public class Player : MonoBehaviour
             PlayerRigidBody.velocity += PlayerRigidBody.transform.parent.GetComponent<MovingObstacle>().MovingRigidBody.velocity;
         }
 
-        Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, CameraAreaScript.GetCameraPos(), ref velocity, 0.2f);
+        Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, CameraAreaScript.GetCameraPos(), ref velocity, 0.1f);
     }
 
     public void SetJump()

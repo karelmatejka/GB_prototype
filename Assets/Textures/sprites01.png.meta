@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: daf2480b5bd3dee41a98940942ef1c00
-timeCreated: 1510698742
+timeCreated: 1511825212
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -11,6 +11,9 @@ TextureImporter:
     21300008: SpritesPlayerLeg
     21300010: SpritesPlayerShadow
     21300012: SpritesObstacleDummy
+    21300014: SpritesSpikeBack
+    21300016: SpritesSpikeFront
+    21300018: SpritesSpikeAnim
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -60,7 +63,7 @@ TextureImporter:
   - buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -68,7 +71,7 @@ TextureImporter:
   - buildTarget: Standalone
     maxTextureSize: 2048
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -76,7 +79,7 @@ TextureImporter:
   - buildTarget: Android
     maxTextureSize: 2048
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -173,6 +176,45 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 9, y: 9, z: 9, w: 9}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: SpritesSpikeBack
+      rect:
+        serializedVersion: 2
+        x: 648
+        y: 1994
+        width: 73
+        height: 37
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: SpritesSpikeFront
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 1910
+        width: 100
+        height: 126
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 47, y: 18, z: 49, w: 101}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: SpritesSpikeAnim
+      rect:
+        serializedVersion: 2
+        x: 730
+        y: 1940
+        width: 52
+        height: 95
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 16, z: 0, w: 63}
       outline: []
       tessellationDetail: 0
     outline: []
