@@ -45,10 +45,12 @@ public class MainScript : MonoBehaviour {
         player.SetJump();
     }
 
-    public GameObject InstantiateObject(GameObject prefabObject, Vector3 position)
+    public GameObject InstantiateObject(GameObject prefabObject, Vector3 position, Quaternion rotation)
     {
         GameObject go;
-        go = Instantiate(prefabObject, position, Quaternion.identity) as GameObject;
+        go = Instantiate(prefabObject, position, rotation) as GameObject;
+        go.transform.SetParent(null);
+        go.transform.localScale = prefabObject.transform.localScale;
         return go;
 
     }

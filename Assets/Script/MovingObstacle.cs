@@ -85,7 +85,7 @@ public class MovingObstacle : MonoBehaviour {
             ActualTime = TrackPoints[TrackPoints.Length - 1].Time + LoopTime + ActualTime;
         }
         ActualSegment = GetSegment(ActualTime);
-        Debug.Log("StartingObstacleTime: " + ActualTime + ", Segment: " + ActualSegment + ", Segments: " + TrackPoints.Length);
+        //Debug.Log("StartingObstacleTime: " + ActualTime + ", Segment: " + ActualSegment + ", Segments: " + TrackPoints.Length);
 
         for (i = 0; i < TrackPoints.Length; i++)
         {
@@ -145,7 +145,7 @@ public class MovingObstacle : MonoBehaviour {
         {
             ActualSegment = 0;
             ActualTime = ActualTime - (TrackPoints[TrackPoints.Length - 1].Time + LoopTime);
-            Debug.Log("EndOfObstacleLoop - time set to: " + ActualTime);
+            //Debug.Log("EndOfObstacleLoop - time set to: " + ActualTime);
             if (LoopTime == 0)
             {
                 //reset position

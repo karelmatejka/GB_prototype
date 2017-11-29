@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Script\AdvancedPolygonCollider.cs" />
      <Compile Include="Assets\Script\AdvancedPolygonColliderUtilities.cs" />
+     <Compile Include="Assets\Script\AnimAtTimer.cs" />
      <Compile Include="Assets\Script\AnimationTimeShift.cs" />
      <Compile Include="Assets\Script\CameraArea.cs" />
      <Compile Include="Assets\Script\Coin.cs" />
@@ -59,6 +60,9 @@
      <Compile Include="Assets\Script\Paralax.cs" />
      <Compile Include="Assets\Script\Player.cs" />
      <Compile Include="Assets\Script\PlayerKiller.cs" />
+     <Compile Include="Assets\Script\Projectile.cs" />
+     <Compile Include="Assets\Script\SequenceTimer.cs" />
+     <Compile Include="Assets\Script\ShootAtTimer.cs" />
      <None Include="Assets\AdvancedPolygonCollider\Readme.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

@@ -1,27 +1,25 @@
 fileFormatVersion: 2
-guid: daf2480b5bd3dee41a98940942ef1c00
-timeCreated: 1511918455
+guid: 0a0a76bd45ab5f44dbceb1d06a48326d
+timeCreated: 1511917445
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: SpritesRectangleBorder
-    21300002: SpritesPlayerRectangle
-    21300004: SpritesCircle
-    21300006: SpritesRectangleBlink
-    21300008: SpritesPlayerLeg
-    21300010: SpritesPlayerShadow
-    21300012: SpritesObstacleDummy
-    21300014: SpritesSpikeBack
-    21300016: SpritesSpikeFront
-    21300018: SpritesSpikeAnim
-    21300020: SpritesShootingSpike
-    21300022: SpritesShootingSpikeFrontMouth
-    21300024: SpritesShootingSpikeBackMouthA
-    21300026: SpritesShootingSpikeBackMouthB
-    21300028: SpritesShootingSpikeFrontBody
-    21300030: SpritesShootingSpikeBackBricks
-    21300032: SpritesSpikeGlow
-    21300034: SpritesDiamondOutline
+    21300000: diamondAnimated_0
+    21300002: diamondAnimated_1
+    21300004: diamondAnimated_2
+    21300006: diamondAnimated_3
+    21300008: diamondAnimated_4
+    21300010: diamondAnimated_5
+    21300012: diamondAnimated_6
+    21300014: diamondAnimated_7
+    21300016: diamondAnimated_8
+    21300018: diamondAnimated_9
+    21300020: diamondAnimated_10
+    21300022: diamondAnimated_11
+    21300024: diamondAnimated_12
+    21300026: diamondAnimated_13
+    21300028: diamondAnimated_14
+    21300030: diamondAnimated_15
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -45,7 +43,7 @@ TextureImporter:
   textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
-    filterMode: 2
+    filterMode: -1
     aniso: -1
     mipBias: -1
     wrapMode: 1
@@ -96,236 +94,210 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SpritesRectangleBorder
+      name: diamondAnimated_0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 1912
-        width: 129
-        height: 129
+        x: 0
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 31, y: 31, z: 31, w: 31}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: SpritesPlayerRectangle
-      rect:
-        serializedVersion: 2
-        x: 370
-        y: 1973
-        width: 68
-        height: 68
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 18, y: 19, z: 20, w: 19}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: SpritesCircle
-      rect:
-        serializedVersion: 2
-        x: 237
-        y: 1981
-        width: 50
-        height: 49
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: SpritesRectangleBlink
+      name: diamondAnimated_1
       rect:
         serializedVersion: 2
-        x: 296
-        y: 1981
-        width: 50
-        height: 49
+        x: 64
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: SpritesPlayerLeg
+      name: diamondAnimated_2
       rect:
         serializedVersion: 2
-        x: 448
-        y: 1997
-        width: 29
-        height: 46
+        x: 128
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: SpritesPlayerShadow
+      name: diamondAnimated_3
       rect:
         serializedVersion: 2
-        x: 492
-        y: 2020
-        width: 58
-        height: 25
+        x: 192
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: SpritesObstacleDummy
+      name: diamondAnimated_4
       rect:
         serializedVersion: 2
-        x: 586
-        y: 2004
-        width: 31
-        height: 31
+        x: 0
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 9, y: 9, z: 9, w: 9}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: SpritesSpikeBack
-      rect:
-        serializedVersion: 2
-        x: 648
-        y: 1994
-        width: 73
-        height: 37
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: SpritesSpikeFront
+      name: diamondAnimated_5
       rect:
         serializedVersion: 2
-        x: 800
-        y: 1910
-        width: 100
-        height: 126
+        x: 64
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 47, y: 18, z: 49, w: 101}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: SpritesSpikeAnim
-      rect:
-        serializedVersion: 2
-        x: 730
-        y: 1940
-        width: 52
-        height: 95
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 16, z: 0, w: 63}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: SpritesShootingSpike
-      rect:
-        serializedVersion: 2
-        x: 912
-        y: 1949
-        width: 44
-        height: 92
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: SpritesShootingSpikeFrontMouth
+      name: diamondAnimated_6
       rect:
         serializedVersion: 2
-        x: 960
-        y: 2002
-        width: 77
-        height: 43
-      alignment: 9
-      pivot: {x: 0.5, y: 0.7986805}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: SpritesShootingSpikeBackMouthA
-      rect:
-        serializedVersion: 2
-        x: 960
-        y: 1939
-        width: 77
-        height: 58
-      alignment: 9
-      pivot: {x: 0.5, y: 0.58378446}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: SpritesShootingSpikeBackMouthB
-      rect:
-        serializedVersion: 2
-        x: 960
-        y: 1880
-        width: 77
-        height: 58
-      alignment: 9
-      pivot: {x: 0.5045079, y: 0.6017393}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: SpritesShootingSpikeFrontBody
-      rect:
-        serializedVersion: 2
-        x: 1062
-        y: 1920
-        width: 137
-        height: 125
+        x: 128
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: SpritesShootingSpikeBackBricks
+      name: diamondAnimated_7
       rect:
         serializedVersion: 2
-        x: 1202
-        y: 1960
-        width: 114
-        height: 86
+        x: 192
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: SpritesSpikeGlow
+      name: diamondAnimated_8
       rect:
         serializedVersion: 2
-        x: 692
-        y: 1936
-        width: 28
-        height: 54
+        x: 0
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: SpritesDiamondOutline
+      name: diamondAnimated_9
       rect:
         serializedVersion: 2
-        x: 1321
-        y: 1983
-        width: 61
-        height: 62
+        x: 64
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: diamondAnimated_10
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: diamondAnimated_11
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: diamondAnimated_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: diamondAnimated_13
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: diamondAnimated_14
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: diamondAnimated_15
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0

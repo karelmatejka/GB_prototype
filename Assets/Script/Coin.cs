@@ -4,17 +4,15 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour {
 
+    public Animator anim;
 	// Use this for initialization
 	void Start ()
     {
-		
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-		
-	}
+        float startPoint = Random.Range(0f, 1f);
+        anim.Play("CoinAnim", -1, startPoint);
+    }
+
+  
 
     void OnTriggerEnter2D(Collider2D other)
     {

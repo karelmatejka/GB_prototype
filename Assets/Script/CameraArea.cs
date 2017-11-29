@@ -20,7 +20,7 @@ public class CameraArea : MonoBehaviour
         BottomLeftRect = BoundingBoxCollider.bounds.min;
         TopRightRect = BoundingBoxCollider.bounds.max;
 
-        Debug.Log("Cropping camera bounding box: " + BottomLeftRect + ", " + TopRightRect);
+        //Debug.Log("Cropping camera bounding box: " + BottomLeftRect + ", " + TopRightRect);
     }
 
     public Vector3 GetCameraPos()
@@ -49,7 +49,7 @@ public class CameraArea : MonoBehaviour
         }
         MaxDistance.x = (x.Max() - x.Min()) / 2 + 12;
         MaxDistance.y = (y.Max() - y.Min()) / 2 + 12;
-        Debug.Log("Max Distance Distance Between Players: " + MaxDistance + " Players: " + x.Count);
+        //Debug.Log("Max Distance Distance Between Players: " + MaxDistance + " Players: " + x.Count);
 
         if (MaxDistance.y > defaultCamSize)
         {
@@ -65,7 +65,7 @@ public class CameraArea : MonoBehaviour
             {
                 NewCamRectangle.x = (TopRightRect.x - BottomLeftRect.x) / 2;
                 NewCamRectangle.y = NewCamRectangle.x / Camera.main.aspect;
-                Debug.Log("Camera Vertically cropped");
+                //Debug.Log("Camera Vertically cropped");
             }
         } else
         {
@@ -88,7 +88,7 @@ public class CameraArea : MonoBehaviour
             {
                 NewCamRectangle.y = (TopRightRect.y - BottomLeftRect.y) / 2;
                 NewCamRectangle.x = NewCamRectangle.x * Camera.main.aspect;
-                Debug.Log("Camera Vertically cropped");
+                //Debug.Log("Camera Vertically cropped");
             }
         }
 
@@ -96,7 +96,7 @@ public class CameraArea : MonoBehaviour
 
         //CamVertExtent = Camera.main.orthographicSize + (Camera.main.orthographicSize - NewCamRectangle.y) * Time.deltaTime;
         CamVertExtent = NewCamRectangle.y;
-        Debug.Log("Camera size: " + CamVertExtent);
+        //Debug.Log("Camera size: " + CamVertExtent);
         Camera.main.orthographicSize = CamVertExtent;
         CamHorzExtent = Camera.main.aspect * Camera.main.orthographicSize;
 

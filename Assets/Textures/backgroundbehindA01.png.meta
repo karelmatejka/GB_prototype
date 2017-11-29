@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: acd362091cf39044094df004899b3c2b
-timeCreated: 1511813800
+timeCreated: 1511915012
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -15,6 +15,7 @@ TextureImporter:
     21300016: backgroundbehindA01_8
     21300018: backgroundbehindA01_9
     21300020: backgroundbehindA01_10
+    21300022: backgroundbehindA01_11
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -199,23 +200,23 @@ TextureImporter:
         x: 1131
         y: 1060
         width: 604
-        height: 589
+        height: 618
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 328, y: 225, z: 261, w: 338}
+      border: {x: 322, y: 201, z: 276, w: 325}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: backgroundbehindA01_9
       rect:
         serializedVersion: 2
-        x: 1755
-        y: 1261
-        width: 272
-        height: 391
+        x: 1735
+        y: 1193
+        width: 313
+        height: 483
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 117, y: 76, z: 152, w: 284}
+      border: {x: 136, y: 43, z: 173, w: 306}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
@@ -227,8 +228,21 @@ TextureImporter:
         width: 22
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: backgroundbehindA01_11
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 1229
+        width: 477
+        height: 432
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 273, y: 19, z: 194, w: 388}
       outline: []
       tessellationDetail: 0
     outline: []
