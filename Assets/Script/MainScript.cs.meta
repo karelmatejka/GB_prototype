@@ -1,10 +1,19 @@
 fileFormatVersion: 2
 guid: 80a2986002f14b44eb6b28a1cef9ff7e
-timeCreated: 1494585699
+timeCreated: 1511979655
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - levelDefinitionScript: {instanceID: 0}
+  - BloodInstance: {instanceID: 0}
+  - PlayerPrefab: {instanceID: 0}
+  - MapInstance: {instanceID: 0}
+  - LoaderInstance: {fileID: 114799527997500068, guid: 047d00221d94e01409803a51e1987a39,
+      type: 2}
+  - GuiPrefab: {fileID: 114320433753161772, guid: e57f10beaede90a4f949b136656ae11d,
+      type: 2}
+  - GuiInstance: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

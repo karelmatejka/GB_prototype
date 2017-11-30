@@ -95,12 +95,16 @@
      <Compile Include="Assets\Script\AdvancedPolygonColliderUtilities.cs" />
      <Compile Include="Assets\Script\AnimAtTimer.cs" />
      <Compile Include="Assets\Script\AnimationTimeShift.cs" />
+     <Compile Include="Assets\Script\ButtonMouse.cs" />
      <Compile Include="Assets\Script\CameraArea.cs" />
      <Compile Include="Assets\Script\Coin.cs" />
      <Compile Include="Assets\Script\FallingAppartObstacle.cs" />
+     <Compile Include="Assets\Script\GUInterface.cs" />
      <Compile Include="Assets\Script\JumpingWall.cs" />
      <Compile Include="Assets\Script\LevelDefinition.cs" />
+     <Compile Include="Assets\Script\Loader.cs" />
      <Compile Include="Assets\Script\MainScript.cs" />
+     <Compile Include="Assets\Script\MenuInit.cs" />
      <Compile Include="Assets\Script\MovingObstacle.cs" />
      <Compile Include="Assets\Script\Paralax.cs" />
      <Compile Include="Assets\Script\Player.cs" />
@@ -108,6 +112,7 @@
      <Compile Include="Assets\Script\Projectile.cs" />
      <Compile Include="Assets\Script\SequenceTimer.cs" />
      <Compile Include="Assets\Script\ShootAtTimer.cs" />
+     <Compile Include="Assets\Script\SimulateParticles.cs" />
      <None Include="Assets\PostProcessing\Resources\Shaders\DepthOfField.shader" />
      <None Include="Assets\PostProcessing\Resources\Shaders\MotionBlur.cginc" />
      <None Include="Assets\PostProcessing\Resources\Shaders\Fog.shader" />

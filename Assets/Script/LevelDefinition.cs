@@ -6,4 +6,9 @@ public class LevelDefinition : MonoBehaviour {
 
     public GameObject StartingPosition;
 
+    public void InitMap()
+    {
+
+    }
+
 }

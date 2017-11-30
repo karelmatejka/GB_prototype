@@ -6,6 +6,7 @@ public class ShootAtTimer : MonoBehaviour {
 
     SequenceTimer SequenceTimerScript;
     public GameObject ProjectilePrefab;
+    public AudioSource[] ShotSounds;
     // Use this for initialization
     void Start () {
         SequenceTimerScript = this.GetComponent<SequenceTimer>();
@@ -19,7 +20,8 @@ public class ShootAtTimer : MonoBehaviour {
         {
             GameObject projectile;
             projectile = MainScript.GetInstance().InstantiateObject(ProjectilePrefab, this.transform.position,this.transform.rotation);
-            Debug.Log("Shooting At Timer");
+            MainScript.GetInstance().PlayRandomSound(ShotSounds, this.transform.position);
+            //Debug.Log("Shooting At Timer");
         }
     }
 }

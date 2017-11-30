@@ -12,6 +12,9 @@ public class Player : MonoBehaviour
         public Vector2 gravity;
     }
 
+    public AudioSource[] JumpSounds;
+    public AudioSource[] KillSounds;
+
     public Animator PlayerAnim;
     public GameObject Shadow;
     public JumpingWall[] JumpingWalls;
@@ -41,6 +44,7 @@ public class Player : MonoBehaviour
     Vector2 joypad;
     Vector2 lastjoypad;
     int ButtonFire;
+    [HideInInspector] public bool GoingFromMenu = false;
 
     // Use this for initialization
     void Start()
@@ -234,14 +238,19 @@ public class Player : MonoBehaviour
         if (ButtonFire > 0)
         {
             ButtonFire = ButtonFire - 1;
-            if /*(PlayerInCollision)*/(!Jumping)
+            if /*(PlayerInCollision)*/(!Jumping && !GoingFromMenu)
             {
                 //jump
                 //PlayerRigidBody.AddForce(-ActualGravity.normalized * JumpConstant);
                 GravityAndJump += -ActualGravity.normalized * JumpConstant;
                 Debug.DrawRay(this.transform.position, -ActualGravity.normalized * JumpConstant);
                 SetJump();
-            }
+                MainScript.GetInstance().PlayRandomSound(JumpSounds, this.transform.position); 
+            }            
+        }
+        if (ButtonFire == 0 && GoingFromMenu)
+        {
+            GoingFromMenu = false;
         }
 
         Vector2 finalVector  = movementVector + GravityAndJump;

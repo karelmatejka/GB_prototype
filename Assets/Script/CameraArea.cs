@@ -47,6 +47,10 @@ public class CameraArea : MonoBehaviour
             //Debug.Log("Player Position[" + i + "]: " + x[i] + ", " + y[i]);
 
         }
+        if (MainScript.GetInstance().PlayersToFollow.Length == 0)
+        {
+            return Vector3.zero;
+        }
         MaxDistance.x = (x.Max() - x.Min()) / 2 + 12;
         MaxDistance.y = (y.Max() - y.Min()) / 2 + 12;
         //Debug.Log("Max Distance Distance Between Players: " + MaxDistance + " Players: " + x.Count);

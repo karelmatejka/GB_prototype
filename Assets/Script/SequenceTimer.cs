@@ -30,7 +30,7 @@ public class SequenceTimer : MonoBehaviour {
         {
             ActualTime = LoopTime + ActualTime;
         }
-        Debug.Log("Sequence Timer Init Time: " + ActualTime);
+        //Debug.Log("Sequence Timer Init Time: " + ActualTime);
 
         if (TimeShift>0) FirstTime = true;
         else FirstTime = false;
@@ -75,7 +75,7 @@ public class SequenceTimer : MonoBehaviour {
             {
                 TimeTriggers[i].Triggered = true;
                 Triggered = true;
-                Debug.Log("Triggered at Time: " + ActualTime);
+                //Debug.Log("Triggered at Time: " + ActualTime);
             }
         }
     }
