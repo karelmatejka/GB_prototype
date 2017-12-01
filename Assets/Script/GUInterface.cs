@@ -7,6 +7,7 @@ public class GUInterface : MonoBehaviour {
 
     public Text DisplayCoins;
     public Image FadeImage;
+    public Image FadeImage2;
 
 
     public bool fading = false;
@@ -17,8 +18,9 @@ public class GUInterface : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        
-	}
+        FadeImage.material.SetFloat("_Cutoff", 1);
+        FadeImage2.material.SetFloat("_Cutoff", 1);
+    }
 
     public void InitGui()
     {
@@ -44,22 +46,33 @@ public class GUInterface : MonoBehaviour {
                 actualfade = finalfade;
                 fading = false;
             }
-            Color newColor = new Color(0f, 0f, 0f, actualfade);
-            FadeImage.color = newColor;
+            //Color newColor = new Color(0f, 0f, 0f, actualfade);
+            //FadeImage.color = newColor;
+            FadeImage.material.SetFloat("_Cutoff", 1 - actualfade + 0.2f);
+            FadeImage2.material.SetFloat("_Cutoff", 1 - actualfade);
         }
 	}
+
+    void SetRandomFadePosition()
+    {
+        FadeImage2.transform.position = new Vector3(Random.Range(0, 600) - 300, Random.Range(0, 600) - 300, 0);
+        FadeImage.transform.position = FadeImage2.transform.position;
+    }
+
     public void Fade(bool fadein)
     {
         if (fadein)
         {
+            SetRandomFadePosition();
             fadedirection = 1;
-            finalfade = 1;
+            finalfade = 1.5f;
             fading = true;
         }
         else
         {
+            SetRandomFadePosition();
             fadedirection = -1;
-            finalfade = 0;
+            finalfade = -0.5f;
             fading = true;
         }
     }

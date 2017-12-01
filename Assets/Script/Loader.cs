@@ -19,14 +19,19 @@ public class Loader : MonoBehaviour {
 
     [HideInInspector] public int activemenu = -1;
 
-    public string activelevel;
-    bool menuclicked = false;
+    public string ActiveLevel = "";
+
+    List<string> LevelNames;
+
+    public bool menuclicked = false;
 
     // Use this for initialization
     void Start()
     {
         LevelDefinition test;
         GameObject go;
+
+        FeedLevelNames();
 
         MainScript.GetInstance();
 
@@ -51,10 +56,52 @@ public class Loader : MonoBehaviour {
     {
         OpenMenu(0);
     }
-    
+
+    // Update is called once per frame
     void Update()
     {
+        if (Input.GetButtonDown("Exit"))
+        {
+            
+            if (activemenu == -1) //Open Pause Menu
+            {
+                OpenMenu(1);
+                Time.timeScale = 0.0f;
+            }
+            else if (activemenu == 1) //Back to Game
+            {
+                ResumeGame();
+            }
+           
+        }
+        if (Input.GetButtonDown("Cancel") && activemenu == 1) //Back to Game
+        {
+            ResumeGame();
+        } else
+        if ((Input.GetButtonDown("Cancel") || Input.GetButtonDown("Exit")) && activemenu == 3) //Back to Menu from Level Selector
+        {
+            menuclicked = true;
+            StartCoroutine(FadeBetweenMenus(3, 0));
+        }
+        if (Input.GetButtonDown("Cancel") && activemenu == 2) //Back From Exit Game 
+        {
+            menuclicked = true;
+            CloseMenu(2);
+            StartCoroutine(EnableMenu(0, true));
+        }
+    }
 
+    public IEnumerator FadeBetweenMenus(int first, int second)
+    {
+        MainScript.GetInstance().GuiInstance.Fade(true);
+        while (MainScript.GetInstance().GuiInstance.fading)
+        {
+            yield return null;
+        }
+        CloseMenu(first);
+        OpenMenu(second);
+        MainScript.GetInstance().GuiInstance.Fade(false);
+        yield return null;
     }
 
     public void OpenMenu(int menuID)
@@ -103,7 +150,25 @@ public class Loader : MonoBehaviour {
             {
                 if (MenuField[menuID].MenuInstance.previousbutton == null)
                 {
-                    MenuField[menuID].MenuInstance.firstbutton.Select();
+                    if (menuID != 3)
+                    {
+                        MenuField[menuID].MenuInstance.firstbutton.Select();
+                    }
+                    else if (ActiveLevel == "")
+                    {
+                        MenuField[menuID].MenuInstance.firstbutton.Select(); //SELECT THE LATEST LEVEL
+                    }
+                    else
+                    {
+                        Debug.Log("Entering Level Selector From Game");
+                        for (i = 0; i < LevelNames.Count; i++)
+                        {
+                            if (LevelNames[i] == ActiveLevel)
+                            {
+                                MenuField[menuID].MenuInstance.buttons[i].Select();
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -137,17 +202,15 @@ public class Loader : MonoBehaviour {
             {
                 if (buttonpressed == 0) //Start
                 {
-                    LoadLevel("Scenes/Prototype");
+                    StartCoroutine(FadeBetweenMenus(0, 3));
+                    /*CloseMenu(0);
+                    OpenMenu(3);*/
                 }
-                else if (buttonpressed == 1) //Start
-                {
-                    LoadLevel("Scenes/LevelTest02");
-                }
-                else if (buttonpressed == 2) //Config
+                else if (buttonpressed == 1) //Config
                 {
                     menuclicked = false;
                 }
-                else if (buttonpressed == 3)  //Exit
+                else if (buttonpressed == 2)  //Exit
                 {
                     StartCoroutine(EnableMenu(0, false));
                     OpenMenu(2);
@@ -175,6 +238,17 @@ public class Loader : MonoBehaviour {
                 {
                     CloseMenu(2);
                     StartCoroutine(EnableMenu(0, true));
+                }
+            }
+            else if (activemenu == 3) //Level Selector
+            {
+                int i;
+                for (i = 0; i < MenuField[3].MenuInstance.buttons.Length; i++)
+                {
+                    if (buttonpressed == i)
+                    {
+                        LoadLevel(LevelNames[i]);
+                    }
                 }
             }
         }
@@ -213,11 +287,11 @@ public class Loader : MonoBehaviour {
         }
 
         AsyncOperation async;
-        Debug.Log("Unloading the level: " + activelevel);
+        Debug.Log("Unloading the level: " + ActiveLevel);
         LoaderCam.transform.SetParent(this.transform);
         LoaderCam.transform.localPosition = Vector3.zero;
 
-        async = SceneManager.UnloadSceneAsync(activelevel);
+        async = SceneManager.UnloadSceneAsync(ActiveLevel);
 
       
         while (!async.isDone)
@@ -225,7 +299,7 @@ public class Loader : MonoBehaviour {
             yield return null;
         }
         ResumeGame();
-        OpenMenu(0);
+        OpenMenu(3);
         MainScript.GetInstance().GuiInstance.Fade(false);
     }
 
@@ -242,7 +316,7 @@ public class Loader : MonoBehaviour {
             yield return null;
         }
 
-        CloseMenu(0);
+        CloseMenu(3);
 
         if (add)
         {
@@ -271,10 +345,16 @@ public class Loader : MonoBehaviour {
         //StatusText.text = "<Loading Complete : " + LevelInfo.LevelName + " : 100>";
         LoaderCam.transform.SetParent(Camera.main.transform);
         LoaderCam.transform.localPosition = Vector3.back * 150;
-        activelevel = level;
+        ActiveLevel = level;
         MainScript.GetInstance().InitLevel(true);
         MainScript.GetInstance().GuiInstance.Fade(false);
     }
 
+    void FeedLevelNames()
+    {
+        LevelNames = new List<string>();
+        LevelNames.Add("Prototype");
+        LevelNames.Add("Prototype2");
+    }
 
 }

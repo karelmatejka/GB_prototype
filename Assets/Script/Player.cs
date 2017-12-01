@@ -61,6 +61,8 @@ public class Player : MonoBehaviour
         {
             CameraAreaScript = GameObject.FindObjectOfType(typeof(CameraArea)) as CameraArea;
 
+            Camera.main.transform.position = CameraAreaScript.GetCameraPos();
+
             go = GameObject.FindGameObjectsWithTag("JumpingColliders");
             JumpingWalls = new JumpingWall[go.Length];
             for (i = 0; i < go.Length; i++)

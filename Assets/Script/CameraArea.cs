@@ -49,11 +49,15 @@ public class CameraArea : MonoBehaviour
         }
         if (MainScript.GetInstance().PlayersToFollow.Length == 0)
         {
-            return Vector3.zero;
+            //return Vector3.zero;
+            MaxDistance = MainScript.GetInstance().levelDefinitionScript.StartingPosition.transform.position;
         }
-        MaxDistance.x = (x.Max() - x.Min()) / 2 + 12;
-        MaxDistance.y = (y.Max() - y.Min()) / 2 + 12;
-        //Debug.Log("Max Distance Distance Between Players: " + MaxDistance + " Players: " + x.Count);
+        else
+        {
+            MaxDistance.x = (x.Max() - x.Min()) / 2 + 12;
+            MaxDistance.y = (y.Max() - y.Min()) / 2 + 12;
+            //Debug.Log("Max Distance Distance Between Players: " + MaxDistance + " Players: " + x.Count);
+        }
 
         if (MaxDistance.y > defaultCamSize)
         {

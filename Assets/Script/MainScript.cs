@@ -29,42 +29,25 @@ public class MainScript : MonoBehaviour {
         if (instance == null)
         {
             instance = GameObject.Instantiate(Resources.Load("MainScript", typeof(MainScript))) as MainScript;
-            instance.Init();
+            instance.InitMainScript();
         }
         return instance;
     }
 
     // Use this for initialization
-    void Init()
+    void InitMainScript()
     {
-        int i;
-        GameObject[] go;
-
         levelDefinitionScript = GameObject.FindObjectOfType(typeof(LevelDefinition)) as LevelDefinition;
-
         GuiInstance = Instantiate(GuiPrefab) as GUInterface;
 
         LoaderInstance = GameObject.FindObjectOfType(typeof(Loader)) as Loader;
 
         if (LoaderInstance == null)
         {
-            //LoaderInstance = GameObject.Instantiate(Resources.Load("Loader", typeof(Loader))) as Loader;
             StartCoroutine(LoadMenu());
-            
             Debug.Log("Starting Level Without Menu");
         }
-
-
-            //go = GameObject.FindGameObjectsWithTag("PlayerEnvelope");
-            //PlayersToFollow = new Player[go.Length];
-
-            /*for (i = 0; i < go.Length; i++)
-            {
-                PlayersToFollow[i] = go[i].GetComponent<Player>();
-                //PlayersToFollow[i].transform.position = levelDefinitionScript.StartingPosition.transform.position;
-                RestartLevel(PlayersToFollow[i]);
-            }*/
-        }
+    }
 
     public IEnumerator LoadMenu()
     {
@@ -83,7 +66,7 @@ public class MainScript : MonoBehaviour {
         Debug.Log("Loader found: " + MainScript.GetInstance().LoaderInstance);
         MainScript.GetInstance().LoaderInstance.InitMenu();
         MainScript.GetInstance().LoaderInstance.CloseMenu(0);
-        MainScript.GetInstance().LoaderInstance.activelevel = "Scenes/" + SceneManager.GetActiveScene().name;
+        MainScript.GetInstance().LoaderInstance.ActiveLevel = SceneManager.GetActiveScene().name;
         MainScript.GetInstance().transform.SetParent(MainScript.GetInstance().LoaderInstance.transform);
         InitLevel(true);
     }
@@ -105,29 +88,6 @@ public class MainScript : MonoBehaviour {
         go.transform.localScale = prefabObject.transform.localScale;
         return go;
 
-    }
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-        if (Input.GetButtonDown("Exit1"))
-        {
-            if (LoaderInstance != null)
-            {
-                if (LoaderInstance.activemenu == -1) //Open Pause Menu
-                {
-                    LoaderInstance.OpenMenu(1);
-                    Time.timeScale = 0.0f;
-                }
-                else if (LoaderInstance.activemenu == 1) //Back to Game
-                {
-                    LoaderInstance.ResumeGame();
-                }
-            }
-        }
     }
 
     public void InitLevel(bool init)
@@ -175,7 +135,7 @@ public class MainScript : MonoBehaviour {
         AudioSource aSource;
         r = Random.Range(0, audiofield.Length);
         aSource = Instantiate(audiofield[r]) as AudioSource;
-        Destroy(aSource,aSource.clip.length);
+        Destroy(aSource.gameObject, aSource.clip.length);
     }
 
 

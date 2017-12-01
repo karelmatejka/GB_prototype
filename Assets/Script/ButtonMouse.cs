@@ -14,6 +14,9 @@ public class ButtonMouse : MonoBehaviour, ISelectHandler, IPointerEnterHandler
 
     public void OnSelect(BaseEventData eventData)
     {
-        MainScript.GetInstance().PlayRandomSound(MainScript.GetInstance().ButtonSelectSound, this.transform.position);
+        if (!MainScript.GetInstance().LoaderInstance.menuclicked)
+        {
+            MainScript.GetInstance().PlayRandomSound(MainScript.GetInstance().ButtonSelectSound, this.transform.position);
+        }
     }
 }
