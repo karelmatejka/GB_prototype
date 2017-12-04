@@ -39,7 +39,7 @@ public class GUInterface : MonoBehaviour {
     {
 	    if (fading)
         {
-            actualfade += Time.unscaledDeltaTime * fadedirection * 3;
+            actualfade += Time.unscaledDeltaTime * fadedirection * 4;
             if ((fadedirection > 0 && actualfade > finalfade) || (fadedirection < 0 && actualfade < finalfade))
             {
                 Debug.Log("Fading End");

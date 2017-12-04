@@ -11,6 +11,8 @@ public class MainScript : MonoBehaviour {
     public AudioSource[] ButtonSelectSound;
     public Player[] PlayerPrefab;
 
+    public string[] joysticksFound;
+
     [HideInInspector] public Loader LoaderInstance = null;
 
     [HideInInspector] public bool LevelLoaded = false;
@@ -46,6 +48,14 @@ public class MainScript : MonoBehaviour {
         {
             StartCoroutine(LoadMenu());
             Debug.Log("Starting Level Without Menu");
+        }
+
+        
+        int i;
+        joysticksFound = Input.GetJoystickNames();
+        for (i = 0; i < joysticksFound.Length; i++)
+        {
+            Debug.Log("Joystick Found: " + joysticksFound[i]);
         }
     }
 
@@ -91,9 +101,7 @@ public class MainScript : MonoBehaviour {
     }
 
     public void InitLevel(bool init)
-    {
-        int i;
-        
+    {   
         if (init)
         {
             levelDefinitionScript = GameObject.FindObjectOfType(typeof(LevelDefinition)) as LevelDefinition;

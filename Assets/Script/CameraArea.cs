@@ -109,7 +109,7 @@ public class CameraArea : MonoBehaviour
         CamHorzExtent = Camera.main.aspect * Camera.main.orthographicSize;
 
         position = position / MainScript.GetInstance().PlayersToFollow.Length;
-        position.z = -10;
+        position.z = -200;
 
         BottomLeft = BottomLeftRect;
         TopRight = TopRightRect;
