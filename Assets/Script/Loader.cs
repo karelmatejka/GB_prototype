@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using InControl;
 
 public class Loader : MonoBehaviour {
 
@@ -25,11 +26,18 @@ public class Loader : MonoBehaviour {
 
     public bool menuclicked = false;
 
+    public InputModuleActionAdapter InputAdapter;
+
+    bool ExitPressed;
+    bool CancelPressed;
+
     // Use this for initialization
     void Start()
     {
         LevelDefinition test;
         GameObject go;
+
+        InputAdapter = GetComponent<InputModuleActionAdapter>();
 
         FeedLevelNames();
 
@@ -50,7 +58,6 @@ public class Loader : MonoBehaviour {
 
     }
 
-    // Update is called once per frame
 
     public void InitMenu()
     {
@@ -60,7 +67,7 @@ public class Loader : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Exit"))
+        if (InputAdapter.actions.Exit.WasPressed)
         {
             
             if (activemenu == -1) //Open Pause Menu
@@ -74,16 +81,18 @@ public class Loader : MonoBehaviour {
             }
            
         }
-        if (Input.GetButtonDown("Cancel") && activemenu == 1) //Back to Game
+        if (InputAdapter.actions.Cancel.WasPressed && activemenu == 1) //Back to Game
         {
             ResumeGame();
         } else
-        if ((Input.GetButtonDown("Cancel") || Input.GetButtonDown("Exit")) && activemenu == 3) //Back to Menu from Level Selector
+        if ((InputAdapter.actions.Cancel.WasPressed || InputAdapter.actions.Exit.WasPressed) && activemenu == 3) //Back to Menu from Level Selector
         {
             menuclicked = true;
-            StartCoroutine(FadeBetweenMenus(3, 0));
+            //StartCoroutine(FadeBetweenMenus(3, 0));
+            CloseMenu(3);
+            OpenMenu(0);
         }
-        if (Input.GetButtonDown("Cancel") && activemenu == 2) //Back From Exit Game 
+        if (InputAdapter.actions.Cancel.WasPressed && activemenu == 2) //Back From Exit Game 
         {
             menuclicked = true;
             CloseMenu(2);
@@ -202,9 +211,9 @@ public class Loader : MonoBehaviour {
             {
                 if (buttonpressed == 0) //Start
                 {
-                    StartCoroutine(FadeBetweenMenus(0, 3));
-                    /*CloseMenu(0);
-                    OpenMenu(3);*/
+                    //StartCoroutine(FadeBetweenMenus(0, 3));
+                    CloseMenu(0);
+                    OpenMenu(3);
                 }
                 else if (buttonpressed == 1) //Config
                 {

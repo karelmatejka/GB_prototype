@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using InControl;
 
 public class MainScript : MonoBehaviour {
 
@@ -11,7 +12,6 @@ public class MainScript : MonoBehaviour {
     public AudioSource[] ButtonSelectSound;
     public Player[] PlayerPrefab;
 
-    public string[] joysticksFound;
 
     [HideInInspector] public Loader LoaderInstance = null;
 
@@ -19,6 +19,8 @@ public class MainScript : MonoBehaviour {
 
     public GUInterface GuiPrefab;
     [HideInInspector] public GUInterface GuiInstance;
+
+    public InputDevice joystick;
 
     //-------------SAVE-------------------
     public int Coins = 0;
@@ -52,11 +54,12 @@ public class MainScript : MonoBehaviour {
 
         
         int i;
-        joysticksFound = Input.GetJoystickNames();
-        for (i = 0; i < joysticksFound.Length; i++)
+        
+        /*for (i = 0; i < InputManager.Devices.Count; i++)
         {
-            Debug.Log("Joystick Found: " + joysticksFound[i]);
+            Debug.Log("Joystick Found: " + InputManager.Devices[i].Name);
         }
+        joystick = InputManager.ActiveDevice;*/
     }
 
     public IEnumerator LoadMenu()

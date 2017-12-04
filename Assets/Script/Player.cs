@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using InControl;
 
 public class Player : MonoBehaviour
 {
@@ -440,27 +441,52 @@ public class Player : MonoBehaviour
 
     void SetControlValues()
     {
-        joypad.x = Input.GetAxis("Horizontal" + ControllerIndex);
-        joypad.y = Input.GetAxis("Vertical" + ControllerIndex);
+        joypad.x = InputManager.ActiveDevice.LeftStickX;
+        joypad.y = InputManager.ActiveDevice.LeftStickY;
+
+        if (joypad.magnitude > 0)
+        {
+            lastjoypad = joypad;
+            //Debug.Log("WalkingSet");
+        }
+        else
+        {
+            joypad = Vector2.zero;
+
+            if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Left)
+            {
+                joypad.x = -1;
+            }
+            if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Right)
+            {
+                joypad.x = 1;
+            }
+            if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Up)
+            {
+                joypad.y = 1;
+            }
+            if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Down)
+            {
+                joypad.y = -1;
+            }            
+        }
 
         if (joypad.magnitude >= 0.1)
         {
             lastjoypad = joypad;
             //Debug.Log("WalkingSet");
-        } else
-        {
-            joypad = Vector2.zero;
         }
 
-        //joypad = joypad + MainScript.GetInstance().GuiInstance.VirtualJoystick.InputDirection;
 
-        if (Input.GetButtonDown("Jump" + ControllerIndex))
+
+
+        if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Jump.WasPressed)
         {
             ButtonFire = 3;
             //ActualFireRate = 100;
             Debug.Log("JumpSet for controller: " + ControllerIndex);
         }
-        if (Input.GetButtonUp("Jump" + ControllerIndex))
+        if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Jump.WasReleased)
         {
             ButtonFire = 0;
         }
