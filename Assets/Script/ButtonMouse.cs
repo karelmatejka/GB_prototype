@@ -16,7 +16,7 @@ public class ButtonMouse : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     {
         if (!MainScript.GetInstance().LoaderInstance.menuclicked)
         {
-            MainScript.GetInstance().PlayRandomSound(MainScript.GetInstance().ButtonSelectSound, this.transform.position);
+            MainScript.GetInstance().PlayRandomSound(MainScript.GetInstance().ButtonSelectSound, this.transform.position, false);
         }
     }
 }

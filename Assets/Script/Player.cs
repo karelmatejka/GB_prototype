@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     Vector2 ActualGravity;
     Vector2 ComputedGravityVector;
     Vector2 GravityAndJump;
+    Vector2 movementVector;
 
     Rigidbody2D PlayerRigidBody;    
 
@@ -39,7 +40,12 @@ public class Player : MonoBehaviour
     public bool PlayerInCollision;
     public bool Jumping;
     float JumpingTime;
+    float JumpingTimeUp;
+    float JumpingTimeDown;
     float JumpingTimeMinus;
+    float JumpingTimeFall;
+    float JumpingRadiusUp;
+    float JumpingRadiusDown;
     public bool Walking;
 
     Vector2 joypad;
@@ -76,7 +82,13 @@ public class Player : MonoBehaviour
             JumpConstant = 31;
             MaxSpeed = 40;
             MaxTrackingRays = 128;
-            JumpingTimeMinus = -0.20f;
+            JumpingTimeMinus = -0.2f;
+            JumpingTimeUp = 0.1f; //0.14f
+            JumpingTimeDown = 0.25f;
+            JumpingTimeFall = 1f;
+            JumpingRadiusUp = 0.1f;
+            JumpingRadiusDown = 4f;
+            
 
             PlayerRigidBody = this.GetComponent<Rigidbody2D>();
             PlayerImage = this.GetComponent<Image>();
@@ -86,11 +98,8 @@ public class Player : MonoBehaviour
         GravityAndJump = Vector2.zero;
         ComputedGravityVector = Vector2.down * GravityConstant;
 
-        PlayerInCollision = false;
-        Jumping = true;
-        
+        SetJump(false);
         JumpingTime = JumpingTimeMinus;
-        Walking = false;
         joypad = Vector2.zero;
         lastjoypad = Vector2.zero;
         ButtonFire = 0;
@@ -115,14 +124,22 @@ public class Player : MonoBehaviour
     void Update()
     {
         Vector3 velocity = Vector3.zero;
-        Vector3 cross;
 
         GetControls();
 
         Vector2 dir = ComputedGravityVector.normalized * GravityConstant;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        /*if (Jumping)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(angle, Vector3.forward), Time.deltaTime * 20);
+        }
+        else
+        {
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }*/
+
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(angle, Vector3.forward), Time.deltaTime*20);
 
 
         /*--follow move direction--*/
@@ -136,119 +153,46 @@ public class Player : MonoBehaviour
     {
         Vector3 velocity = Vector3.zero;
         float delta;
-        Vector2 movementVector;
+        
 
         delta = Time.deltaTime;
 
         movementVector = Vector2.zero;
 
-
         ComputedGravityVector = CheckGravityAround();
-
-        /*
-
-        if (PlayerInCollision)
-        {
-            movementVector = ProjectedVectorToSurface(joypad , ComputedGravityVector) * SpeedConstant;
-
-            Debug.DrawRay(this.transform.position, movementVector/1000);
-
-            //Debug.Log("MovementVector: " + movementVector + " Gravity: " + ComputedGravityVector);
-
-            PlayerRigidBody.AddForce(movementVector * delta);
-            
-            //Shadow.SetActive(true);
-        }
-        else
-        {
-            //Shadow.SetActive(false);
-            if (Jumping)
-            {
-                gravityMultiplier = JumpGravityReductionConstant;
-                //PlayerRigidBody.AddForce(LastMovementVector * delta / 8);
-                LastMovementVector = LastMovementVector * delta * 20;
-            }
-            else
-            {
-                //PlayerRigidBody.AddForce(LastMovementVector * delta / 2);
-                LastMovementVector = LastMovementVector * delta;
-                Debug.Log("Out but not jumping");
-            }
-
-            
-
-            //movementVector = ProjectedVectorToSurface(joypad, ComputedGravityVector) * SpeedConstant / 50;
-
-            movementVector = joypad * SpeedConstant / 30;
-
-            //PlayerRigidBody.AddForce(movementVector * delta);
-            PlayerRigidBody.velocity = movementVector;
-            LastMovementVector = movementVector;
-        }
-
-        if (PlayerRigidBody.velocity.magnitude > MaxSpeedConstant && PlayerInCollision)
-        {
-            PlayerRigidBody.velocity = PlayerRigidBody.velocity.normalized * MaxSpeedConstant;
-        }
-
-        if (PlayerRigidBody.velocity.magnitude > MaxSpeedConstant *300)
-        {
-            PlayerRigidBody.velocity = PlayerRigidBody.velocity.normalized * MaxSpeedConstant * 300;
-        }
-        */
-        //Debug.Log("Player Velocity: " + PlayerRigidBody.velocity.magnitude);
-
-
-
 
         if (ActualGravity != ComputedGravityVector)
         {
+            //ActualGravity = (ActualGravity*3 + ComputedGravityVector.normalized * GravityConstant * delta) / 4;
             ActualGravity = ComputedGravityVector.normalized * GravityConstant * delta;
         }
-        
+
         if (Jumping)
         {
+            
+
             JumpingTime += delta;
             GravityAndJump += ActualGravity * (1 + JumpingTime* JumpingTime * 7);
-            movementVector = (joypad * SpeedConstant)*0.3f + ProjectedVectorToSurface(joypad, ComputedGravityVector) * SpeedConstant * 0.6f;
-            //movementVector = ProjectedVectorToSurface(joypad, ComputedGravityVector) * SpeedConstant;
+            //movementVector = (joypad * SpeedConstant)*0.3f + ProjectedVectorToSurface(joypad, ComputedGravityVector) * SpeedConstant * 0.6f;
+            movementVector = ProjectedVectorToSurface(joypad, ComputedGravityVector) * SpeedConstant;
         }
         else
         {
+         
             JumpingTime = JumpingTimeMinus;
             GravityAndJump = ActualGravity;
             movementVector = ProjectedVectorToSurface(joypad, ComputedGravityVector) * SpeedConstant;
         }
         
-        
-
-        //Physics2D.gravity = ActualGravity;
-        //Physics.gravity = ActualGravity.normalized * 10;
-
-        /*
-
-        if (PlayerInCollision && joypad == Vector2.zero)
-        {
-            if (PlayerRigidBody.transform.parent != null && PlayerRigidBody.transform.parent.tag != "MovingColliders")
-            {
-                PlayerRigidBody.velocity = Vector2.zero;
-                //Physics2D.gravity = Vector2.zero;
-            }
-        }*/
-
-        //Debug.DrawRay(this.transform.position, ActualGravity);
-
         if (ButtonFire > 0)
         {
             ButtonFire = ButtonFire - 1;
-            if /*(PlayerInCollision)*/(!Jumping && !GoingFromMenu)
+            if (!Jumping && !GoingFromMenu)
             {
                 //jump
-                //PlayerRigidBody.AddForce(-ActualGravity.normalized * JumpConstant);
                 GravityAndJump += -ActualGravity.normalized * JumpConstant;
-                Debug.DrawRay(this.transform.position, -ActualGravity.normalized * JumpConstant);
-                SetJump();
-                MainScript.GetInstance().PlayRandomSound(JumpSounds, this.transform.position); 
+                SetJump(true);
+                MainScript.GetInstance().PlayRandomSound(JumpSounds, this.transform.position, false); 
             }            
         }
         if (ButtonFire == 0 && GoingFromMenu)
@@ -262,29 +206,34 @@ public class Player : MonoBehaviour
 
         PlayerRigidBody.velocity = finalVector;
 
-        Debug.DrawRay(this.transform.position, movementVector, Color.green);
+        /*Debug.DrawRay(this.transform.position, movementVector, Color.green);
         Debug.DrawRay(this.transform.position, ActualGravity, Color.blue);
-        Debug.DrawRay(this.transform.position, PlayerRigidBody.velocity, Color.red);
-
+        Debug.DrawRay(this.transform.position, PlayerRigidBody.velocity, Color.red);*/
 
         if (PlayerRigidBody.transform.parent != null && PlayerRigidBody.transform.parent.tag == "MovingColliders" && !Jumping)
         {
             PlayerRigidBody.velocity += PlayerRigidBody.transform.parent.GetComponent<MovingObstacle>().MovingRigidBody.velocity;
         }
+        else if (!Jumping && joypad.magnitude == 0)
+        {
+            PlayerRigidBody.velocity = Vector2.zero;
+        }
+
 
         Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, CameraAreaScript.GetCameraPos(), ref velocity, 0.1f);
+
     }
 
-    public void SetJump()
+    public void SetJump(bool anim)
     {
         //Debug.Log("Jump");
         Jumping = true;
         Walking = false;
         PlayerInCollision = false;
         SetJumpingWallCollidersActive(true, null);
-        PlayerAnim.SetTrigger("Jump");
+        if (anim) PlayerAnim.SetTrigger("Jump");
         this.transform.SetParent(null);
-        //Debug.Log("Jump Set");
+        Debug.Log("Jump Set Anim: " + anim);
     }
 
     void SetJumpingWallCollidersActive(bool active, JumpingWall stayActive)
@@ -300,19 +249,23 @@ public class Player : MonoBehaviour
 
     void setAnimState()
     {
-        if (Jumping && !PlayerInCollision)
+        /*if (Jumping || ButtonFire > 0)
         {
             return;
         }
-        
-
-        if (Walking && joypad.magnitude < 0.1)
+        else */if (Jumping && ButtonFire == 0 && PlayerInCollision && movementVector.magnitude < 1)
         {
             Walking = false;
             PlayerAnim.SetTrigger("Idle");
             Debug.Log("Idle");
         }
-        else if (!Walking && joypad.magnitude >= 0.1)
+        else if (Walking && movementVector.magnitude < 1 && !Jumping && ButtonFire == 0)
+        {
+            Walking = false;
+            PlayerAnim.SetTrigger("Idle");
+            Debug.Log("Idle");
+        }
+        else if (!Walking && movementVector.magnitude >= 1 && !Jumping && ButtonFire == 0)
         {
             PlayerAnim.SetTrigger("Move");
             Walking = true;
@@ -322,7 +275,6 @@ public class Player : MonoBehaviour
 
     void OnCollisionStay2D(Collision2D coll)
     {
-        //if ((Jumping && ButtonFire == 0) || coll.transform.tag == "MovingColliders")
         if ((coll.transform.tag == "JumpingColliders" && ButtonFire > 0) || (coll.transform.tag == "FallingAppartColliders" && coll.gameObject.GetComponent<FallingAppartObstacle>().ActualSegment == -1))
         {
             return;
@@ -332,7 +284,6 @@ public class Player : MonoBehaviour
             return;
         }
         
-        //AttachedObject = coll.gameObject.GetComponent<WallCollider>();
         this.transform.SetParent(coll.gameObject.transform);
         if (coll.gameObject.tag == "JumpingColliders")
         {
@@ -345,8 +296,6 @@ public class Player : MonoBehaviour
         PlayerInCollision = true;
         setAnimState();
         Jumping = false;
-            
-        
     }
     
     Vector2 CheckGravityAround()
@@ -373,17 +322,21 @@ public class Player : MonoBehaviour
             RaycastHit2D[] hit;
             if (Jumping)
             {
-                if (JumpingTime > 0.14f && JumpingTime <0.6f)
+                if (JumpingTime > JumpingTimeUp && JumpingTime < JumpingTimeFall)
                 {
-                    radius = 1.8f;
+                    radius = JumpingRadiusUp + JumpingRadiusDown * (JumpingTime - JumpingTimeUp) / (JumpingTimeDown - JumpingTimeUp);
+                    if (radius > JumpingRadiusDown)
+                    {
+                        radius = JumpingRadiusDown;
+                    }
                 }
-                else if (JumpingTime >= 0.5f)
+                else if (JumpingTime >= JumpingTimeFall)
                 {
-                    radius = 1.2f + JumpingTime * JumpingTime * 20;
+                    radius = JumpingRadiusUp + JumpingRadiusDown + Mathf.Pow((JumpingTime - JumpingTimeDown),2) * 20;
                 }
                 else
                 {
-                    radius = 0.1f;
+                    radius = JumpingRadiusUp;
                 }
             }
             else
@@ -394,10 +347,9 @@ public class Player : MonoBehaviour
             hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)), radius);
             Debug.DrawRay(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)) * radius, Color.green);
 
-            if (hit.Length > 0 && hit[0].transform.tag != "PlayerEnvelope")
+            if (hit.Length > 0 && hit[0].transform.tag != "PlayerEnvelope" && hit[0].transform.tag != "SpikeColliders")
             {
                 ////Debug.Log("Hit:" + impactPoints[i].wallCollider);
-
                 Debug.DrawLine(new Vector3(hit[0].point.x, hit[0].point.y - 1, 0), new Vector3(hit[0].point.x, hit[0].point.y + 1, 0), Color.red, Time.deltaTime, false);
                 Debug.DrawLine(new Vector3(hit[0].point.x - 1, hit[0].point.y, 0), new Vector3(hit[0].point.x + 1, hit[0].point.y, 0), Color.red, Time.deltaTime, false);
 
@@ -423,7 +375,6 @@ public class Player : MonoBehaviour
             if (impactPoints[i].distance != -1)
             {
                 SumOfGravity = SumOfGravity + (1 / (impactPoints[i].distance * impactPoints[i].distance * impactPoints[i].distance * impactPoints[i].distance) / sumOfDistances) * impactPoints[i].gravity;
-
                 //Debug.DrawRay(this.transform.position, (1 / (impactPoints[i].distance * impactPoints[i].distance) / sumOfDistances) * impactPoints[i].gravity * 1000, Color.green);
             }
         }
@@ -444,13 +395,8 @@ public class Player : MonoBehaviour
         joypad.x = InputManager.ActiveDevice.LeftStickX;
         joypad.y = InputManager.ActiveDevice.LeftStickY;
 
-        if (joypad.magnitude > 0)
-        {
-            lastjoypad = joypad;
-            //Debug.Log("WalkingSet");
-        }
-        else
-        {
+        if (joypad.magnitude == 0)
+        {    
             joypad = Vector2.zero;
 
             if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Left)
@@ -476,14 +422,17 @@ public class Player : MonoBehaviour
             lastjoypad = joypad;
             //Debug.Log("WalkingSet");
         }
+        else
+        {
+            joypad = Vector2.zero;
+        }
 
 
 
 
         if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Jump.WasPressed)
         {
-            ButtonFire = 3;
-            //ActualFireRate = 100;
+            ButtonFire = 2;
             Debug.Log("JumpSet for controller: " + ControllerIndex);
         }
         if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Jump.WasReleased)

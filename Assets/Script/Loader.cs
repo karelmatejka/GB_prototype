@@ -268,7 +268,7 @@ public class Loader : MonoBehaviour {
         CloseMenu(1);
         Time.timeScale = 1.0f;
         int i;
-        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Length; i++)
+        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Count; i++)
         {
             MainScript.GetInstance().PlayersToFollow[i].GoingFromMenu = true;
             Debug.Log("GoingFromMenu");

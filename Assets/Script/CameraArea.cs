@@ -37,7 +37,7 @@ public class CameraArea : MonoBehaviour
 
         Vector3 position = Vector3.zero;
 
-        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Length; i++)
+        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Count; i++)
         {
             position = position + MainScript.GetInstance().PlayersToFollow[i].transform.position;
 
@@ -47,7 +47,7 @@ public class CameraArea : MonoBehaviour
             //Debug.Log("Player Position[" + i + "]: " + x[i] + ", " + y[i]);
 
         }
-        if (MainScript.GetInstance().PlayersToFollow.Length == 0)
+        if (MainScript.GetInstance().PlayersToFollow.Count == 0)
         {
             //return Vector3.zero;
             MaxDistance = MainScript.GetInstance().levelDefinitionScript.StartingPosition.transform.position;
@@ -108,7 +108,7 @@ public class CameraArea : MonoBehaviour
         Camera.main.orthographicSize = CamVertExtent;
         CamHorzExtent = Camera.main.aspect * Camera.main.orthographicSize;
 
-        position = position / MainScript.GetInstance().PlayersToFollow.Length;
+        position = position / MainScript.GetInstance().PlayersToFollow.Count;
         position.z = -200;
 
         BottomLeft = BottomLeftRect;

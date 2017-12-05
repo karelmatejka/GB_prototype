@@ -20,7 +20,7 @@ public class PlayerKiller : MonoBehaviour {
         {
             //Debug.Log("Killed entity:" + coll.tag);
             blood = MainScript.GetInstance().InstantiateObject(MainScript.GetInstance().BloodInstance, coll.transform.position, Quaternion.identity);
-            MainScript.GetInstance().PlayRandomSound(coll.gameObject.GetComponent<Player>().KillSounds, this.transform.position);
+            MainScript.GetInstance().PlayRandomSound(coll.gameObject.GetComponent<Player>().KillSounds, this.transform.position, false);
             Destroy(blood.gameObject, 1);
             MainScript.GetInstance().RestartLevel(coll.gameObject.GetComponent<Player>());
         }

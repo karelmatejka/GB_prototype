@@ -87,11 +87,11 @@ public class FallingAppartObstacle : MonoBehaviour {
         WallEdgeCollider.isTrigger = true;
         playerInBounds = true;
 
-        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Length; i++)
+        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Count; i++)
         {
             if (MainScript.GetInstance().PlayersToFollow[i].transform.parent != null && MainScript.GetInstance().PlayersToFollow[i].transform.parent.gameObject == this.gameObject)
             {
-                MainScript.GetInstance().PlayersToFollow[i].SetJump();
+                MainScript.GetInstance().PlayersToFollow[i].SetJump(true);
                 //Debug.Log("Unlink Successful: " + MainScript.GetInstance().PlayersToFollow[i].transform.parent.gameObject);
             }
         }

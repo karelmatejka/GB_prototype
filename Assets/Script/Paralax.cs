@@ -14,7 +14,7 @@ public class Paralax : MonoBehaviour {
 	void Update () {
         Vector3 pos;
         pos = Camera.main.transform.position *  ParalaxMultiplier;
-        pos.z = 0;
+        pos.z = 90;
         transform.position = pos;
 	}
 }

@@ -22,7 +22,7 @@ public class Coin : MonoBehaviour {
         if (other.gameObject.tag == "PlayerEnvelope")
         {
             MainScript.GetInstance().GuiInstance.AddCoins(1);
-            MainScript.GetInstance().PlayRandomSound(CollectCoinSounds, this.transform.position);
+            MainScript.GetInstance().PlayRandomSound(CollectCoinSounds, this.transform.position, false);
            
             Destroy(this.gameObject);
         }

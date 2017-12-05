@@ -172,14 +172,14 @@ public class MovingObstacle : MonoBehaviour {
     void UnlinkPlayer ()
     {
         int i;
-        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Length; i++)
+        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Count; i++)
         {
             //Debug.Log("UnlinkingParent: " + this.gameObject);
             //Debug.Log(" LinkedParent: " + MainScript.GetInstance().PlayersToFollow[i].transform.parent);
 
             if (MainScript.GetInstance().PlayersToFollow[i].transform.parent != null && MainScript.GetInstance().PlayersToFollow[i].transform.parent.gameObject == this.gameObject)
             {
-                MainScript.GetInstance().PlayersToFollow[i].SetJump();
+                MainScript.GetInstance().PlayersToFollow[i].SetJump(true);
             }
         }
     }

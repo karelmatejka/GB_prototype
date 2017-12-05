@@ -6,7 +6,7 @@ using InControl;
 
 public class MainScript : MonoBehaviour {
 
-    [HideInInspector] public Player[] PlayersToFollow;
+    [HideInInspector] public List<Player> PlayersToFollow;
     [HideInInspector] public LevelDefinition levelDefinitionScript;
     public GameObject BloodInstance;
     public AudioSource[] ButtonSelectSound;
@@ -21,6 +21,8 @@ public class MainScript : MonoBehaviour {
     [HideInInspector] public GUInterface GuiInstance;
 
     public InputDevice joystick;
+
+    [HideInInspector] public float GlobalSoundVolume = 1;
 
     //-------------SAVE-------------------
     public int Coins = 0;
@@ -90,7 +92,6 @@ public class MainScript : MonoBehaviour {
         player.transform.position = levelDefinitionScript.StartingPosition.transform.position - Vector3.right * 1 + Vector3.right * 2 * (player.ControllerIndex - 1);
         Debug.Log("Player Starting Position: " + player.transform.position);
         player.InitPlayer(false);
-        player.SetJump();
     }
 
     public GameObject InstantiateObject(GameObject prefabObject, Vector3 position, Quaternion rotation)
@@ -112,11 +113,9 @@ public class MainScript : MonoBehaviour {
             levelDefinitionScript.InitMap();
 
             /*-----INIT PLAYERS------*/
-            PlayersToFollow = new Player[1];
-            PlayersToFollow[0] = Instantiate(PlayerPrefab[0]) as Player;
-            PlayersToFollow[0].gameObject.SetActive(false);
+            PlayersToFollow = new List<Player>();
 
-            PlayersToFollow[0].gameObject.SetActive(true);
+            PlayersToFollow.Add(Instantiate(PlayerPrefab[0]) as Player);
             RestartLevel(PlayersToFollow[0]);
 
             if (LoaderInstance != null)
@@ -140,13 +139,34 @@ public class MainScript : MonoBehaviour {
         }
     }
 
-    public void PlayRandomSound(AudioSource[] audiofield, Vector3 where)
+    public void PlayRandomSound(AudioSource[] audiofield, Vector3 where, bool is3d)
     {
+        int i;
+        float volume = 0;
+        float distance;
         int r;
         AudioSource aSource;
         r = Random.Range(0, audiofield.Length);
-        aSource = Instantiate(audiofield[r]) as AudioSource;
-        Destroy(aSource.gameObject, aSource.clip.length);
+
+        if (!is3d)
+        {
+            volume = 1;
+        }
+        else
+        {
+            for (i = 0; i < PlayersToFollow.Count; i++)
+            {
+                distance = (where - PlayersToFollow[i].transform.position).magnitude;
+                volume = volume + 40 - distance;
+            }
+        }
+        if (volume > 0)
+        {
+            aSource = Instantiate(audiofield[r]) as AudioSource;
+            if (is3d) aSource.volume = aSource.volume * volume / 40 * GlobalSoundVolume;
+            Destroy(aSource.gameObject, aSource.clip.length);
+        }
+        
     }
 
 
