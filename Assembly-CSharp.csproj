@@ -511,6 +511,7 @@
      <Compile Include="Assets\Script\CameraArea.cs" />
      <Compile Include="Assets\Script\Coin.cs" />
      <Compile Include="Assets\Script\FallingAppartObstacle.cs" />
+     <Compile Include="Assets\Script\FlyingSaucer.cs" />
      <Compile Include="Assets\Script\GUInterface.cs" />
      <Compile Include="Assets\Script\InputModuleActionAdapter.cs" />
      <Compile Include="Assets\Script\JumpingWall.cs" />

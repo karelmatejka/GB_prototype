@@ -20,8 +20,6 @@ public class Player : MonoBehaviour
     public GameObject Shadow;
     public JumpingWall[] JumpingWalls;
 
-    CameraArea CameraAreaScript;
-
     public Image PlayerImage;
     public int ControllerIndex;
     Vector2 ActualGravity;
@@ -66,10 +64,6 @@ public class Player : MonoBehaviour
 
         if (firstInit)
         {
-            CameraAreaScript = GameObject.FindObjectOfType(typeof(CameraArea)) as CameraArea;
-
-            Camera.main.transform.position = CameraAreaScript.GetCameraPos();
-
             go = GameObject.FindGameObjectsWithTag("JumpingColliders");
             JumpingWalls = new JumpingWall[go.Length];
             for (i = 0; i < go.Length; i++)
@@ -123,8 +117,6 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        Vector3 velocity = Vector3.zero;
-
         GetControls();
 
         Vector2 dir = ComputedGravityVector.normalized * GravityConstant;
@@ -220,7 +212,7 @@ public class Player : MonoBehaviour
         }
 
 
-        Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, CameraAreaScript.GetCameraPos(), ref velocity, 0.1f);
+        
 
     }
 
@@ -249,11 +241,11 @@ public class Player : MonoBehaviour
 
     void setAnimState()
     {
-        /*if (Jumping || ButtonFire > 0)
+        if (Jumping && ButtonFire == 0 && PlayerInCollision)
         {
-            return;
+            PlayerAnim.SetTrigger("Impact");
         }
-        else */if (Jumping && ButtonFire == 0 && PlayerInCollision && movementVector.magnitude < 1)
+        if (Jumping && ButtonFire == 0 && PlayerInCollision && movementVector.magnitude < 1)
         {
             Walking = false;
             PlayerAnim.SetTrigger("Idle");
@@ -443,6 +435,11 @@ public class Player : MonoBehaviour
 
     void GetControls()
     {
+        if (MainScript.GetInstance().Cutscene)
+        {
+            return;
+        }
+
         SetControlValues();
 
         /*if (MainScript.GetInstance().LoaderInstance == null)

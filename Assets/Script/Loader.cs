@@ -21,8 +21,10 @@ public class Loader : MonoBehaviour {
     [HideInInspector] public int activemenu = -1;
 
     public string ActiveLevel = "";
+    public int ActiveLevelId = -1;
 
-    List<string> LevelNames;
+    [HideInInspector] public List<string> LevelNames;
+    [HideInInspector] public List<LevelDefinition> LevelDefinitions;
 
     public bool menuclicked = false;
 
@@ -34,14 +36,16 @@ public class Loader : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        LevelDefinition test;
+        CameraArea test;
         GameObject go;
 
         InputAdapter = GetComponent<InputModuleActionAdapter>();
 
         FeedLevelNames();
 
-        MainScript.GetInstance();
+        FeedLevelData();
+
+        MainScript.GetInstance().GuiInstance.InitGui();       
 
         if (GameObject.Find("EventSystem") == null)
         {
@@ -49,7 +53,7 @@ public class Loader : MonoBehaviour {
             go.transform.SetParent(this.transform);
         }
 
-        test = GameObject.FindObjectOfType(typeof(LevelDefinition)) as LevelDefinition;
+        test = GameObject.FindObjectOfType(typeof(CameraArea)) as CameraArea;
 
         if (test == null)
         {
@@ -81,10 +85,11 @@ public class Loader : MonoBehaviour {
             }
            
         }
-        if (InputAdapter.actions.Cancel.WasPressed && activemenu == 1) //Back to Game
+        else if (InputAdapter.actions.Cancel.WasPressed && activemenu == 1) //Back to Game
         {
             ResumeGame();
-        } else
+        }
+
         if ((InputAdapter.actions.Cancel.WasPressed || InputAdapter.actions.Exit.WasPressed) && activemenu == 3) //Back to Menu from Level Selector
         {
             menuclicked = true;
@@ -256,7 +261,7 @@ public class Loader : MonoBehaviour {
                 {
                     if (buttonpressed == i)
                     {
-                        LoadLevel(LevelNames[i]);
+                        LoadLevel(i);
                     }
                 }
             }
@@ -275,7 +280,7 @@ public class Loader : MonoBehaviour {
         }
     }
 
-    public void LoadLevel(string level)
+    public void LoadLevel(int level)
     {
         StartCoroutine(LoadLevelCorutine(level, true));
     }
@@ -307,12 +312,15 @@ public class Loader : MonoBehaviour {
         {
             yield return null;
         }
+
+        LevelDefinitions[ActiveLevelId].DisplayMap(false);
+
         ResumeGame();
         OpenMenu(3);
         MainScript.GetInstance().GuiInstance.Fade(false);
     }
 
-    public IEnumerator LoadLevelCorutine(string level, bool add)
+    public IEnumerator LoadLevelCorutine(int level, bool add)
     {
         AsyncOperation async;
 
@@ -329,11 +337,11 @@ public class Loader : MonoBehaviour {
 
         if (add)
         {
-            async = SceneManager.LoadSceneAsync(level, LoadSceneMode.Additive);
+            async = SceneManager.LoadSceneAsync(LevelNames[level], LoadSceneMode.Additive);
         }
         else
         {
-            async = SceneManager.LoadSceneAsync(level, LoadSceneMode.Single);
+            async = SceneManager.LoadSceneAsync(LevelNames[level], LoadSceneMode.Single);
         }
         async.allowSceneActivation = false;
         while (async.progress < 0.9f)
@@ -354,9 +362,24 @@ public class Loader : MonoBehaviour {
         //StatusText.text = "<Loading Complete : " + LevelInfo.LevelName + " : 100>";
         LoaderCam.transform.SetParent(Camera.main.transform);
         LoaderCam.transform.localPosition = Vector3.back * 150;
-        ActiveLevel = level;
+        ActiveLevel = LevelNames[level];
+        ActiveLevelId = level;
         MainScript.GetInstance().InitLevel(true);
         MainScript.GetInstance().GuiInstance.Fade(false);
+    }
+
+    void FeedLevelData()
+    {
+        int i;
+        string str;
+        LevelDefinitions = new List<LevelDefinition>();
+        for (i = 0; i < LevelNames.Count; i++)
+        {
+            str = "Levels/" + LevelNames[i];
+            Debug.Log("Map definition: " + str + " loaded");
+            LevelDefinitions.Add(GameObject.Instantiate(Resources.Load(str, typeof(LevelDefinition))) as LevelDefinition);
+            LevelDefinitions[i].transform.SetParent(this.transform);
+        }
     }
 
     void FeedLevelNames()

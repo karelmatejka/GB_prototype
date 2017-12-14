@@ -7,15 +7,16 @@ using InControl;
 public class MainScript : MonoBehaviour {
 
     [HideInInspector] public List<Player> PlayersToFollow;
-    [HideInInspector] public LevelDefinition levelDefinitionScript;
+    //[HideInInspector] public LevelDefinition levelDefinitionScript;
     public GameObject BloodInstance;
+    public GameObject FuelPrefab;
     public AudioSource[] ButtonSelectSound;
     public Player[] PlayerPrefab;
-
+    public FlyingSaucer FlyingSaucerInstance;
 
     [HideInInspector] public Loader LoaderInstance = null;
 
-    [HideInInspector] public bool LevelLoaded = false;
+    [HideInInspector] public bool Cutscene = true;
 
     public GUInterface GuiPrefab;
     [HideInInspector] public GUInterface GuiInstance;
@@ -23,6 +24,8 @@ public class MainScript : MonoBehaviour {
     public InputDevice joystick;
 
     [HideInInspector] public float GlobalSoundVolume = 1;
+
+    [HideInInspector] public CameraArea CameraAreaScript;
 
     //-------------SAVE-------------------
     public int Coins = 0;
@@ -43,7 +46,9 @@ public class MainScript : MonoBehaviour {
     // Use this for initialization
     void InitMainScript()
     {
-        levelDefinitionScript = GameObject.FindObjectOfType(typeof(LevelDefinition)) as LevelDefinition;
+        //levelDefinitionScript = GameObject.FindObjectOfType(typeof(LevelDefinition)) as LevelDefinition;
+        CameraAreaScript = GameObject.FindObjectOfType(typeof(CameraArea)) as CameraArea;
+
         GuiInstance = Instantiate(GuiPrefab) as GUInterface;
 
         LoaderInstance = GameObject.FindObjectOfType(typeof(Loader)) as Loader;
@@ -53,20 +58,12 @@ public class MainScript : MonoBehaviour {
             StartCoroutine(LoadMenu());
             Debug.Log("Starting Level Without Menu");
         }
-
-        
-        int i;
-        
-        /*for (i = 0; i < InputManager.Devices.Count; i++)
-        {
-            Debug.Log("Joystick Found: " + InputManager.Devices[i].Name);
-        }
-        joystick = InputManager.ActiveDevice;*/
     }
 
     public IEnumerator LoadMenu()
     {
         AsyncOperation async;
+        int i;
 
         async = SceneManager.LoadSceneAsync("Scenes/MainScene", LoadSceneMode.Additive);
 
@@ -77,19 +74,29 @@ public class MainScript : MonoBehaviour {
             yield return null;
         }
 
-        MainScript.GetInstance().LoaderInstance = GameObject.FindObjectOfType(typeof(Loader)) as Loader;
+        LoaderInstance = GameObject.FindObjectOfType(typeof(Loader)) as Loader;
         Debug.Log("Loader found: " + MainScript.GetInstance().LoaderInstance);
-        MainScript.GetInstance().LoaderInstance.InitMenu();
-        MainScript.GetInstance().LoaderInstance.CloseMenu(0);
-        MainScript.GetInstance().LoaderInstance.ActiveLevel = SceneManager.GetActiveScene().name;
-        MainScript.GetInstance().transform.SetParent(MainScript.GetInstance().LoaderInstance.transform);
+        LoaderInstance.InitMenu();
+        LoaderInstance.CloseMenu(0);
+        LoaderInstance.ActiveLevel = SceneManager.GetActiveScene().name;
+
+        for (i = 0; i < LoaderInstance.LevelNames.Count; i++)
+        {
+            if (LoaderInstance.LevelNames[i] == LoaderInstance.ActiveLevel)
+            {
+                LoaderInstance.ActiveLevelId = i;
+            }
+        }
+
+
+        this.transform.SetParent(MainScript.GetInstance().LoaderInstance.transform);
         InitLevel(true);
     }
 
 
     public void RestartLevel(Player player)
     {
-        player.transform.position = levelDefinitionScript.StartingPosition.transform.position - Vector3.right * 1 + Vector3.right * 2 * (player.ControllerIndex - 1);
+        player.transform.position = LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].StartingPosition.transform.position - Vector3.right * 1 + Vector3.right * 2 * (player.ControllerIndex - 1);
         Debug.Log("Player Starting Position: " + player.transform.position);
         player.InitPlayer(false);
     }
@@ -98,39 +105,56 @@ public class MainScript : MonoBehaviour {
     {
         GameObject go;
         go = Instantiate(prefabObject, position, rotation) as GameObject;
-        go.transform.SetParent(levelDefinitionScript.transform);
+        go.transform.SetParent(CameraAreaScript.transform);
         go.transform.localScale = prefabObject.transform.localScale;
         return go;
 
+    }
+
+    void FixedUpdate()
+    {
+        if (Cutscene)
+        {
+            return;
+        }
+        Vector3 velocity = Vector3.zero;
+        Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, CameraAreaScript.GetCameraPos(), ref velocity, 0.1f);
     }
 
     public void InitLevel(bool init)
     {   
         if (init)
         {
-            levelDefinitionScript = GameObject.FindObjectOfType(typeof(LevelDefinition)) as LevelDefinition;
+            Cutscene = true;
 
-            levelDefinitionScript.InitMap();
+            CameraAreaScript = GameObject.FindObjectOfType(typeof(CameraArea)) as CameraArea;
+
+            //levelDefinitionScript = LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId];
+
+            LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].DisplayMap(true);
 
             /*-----INIT PLAYERS------*/
             PlayersToFollow = new List<Player>();
 
             PlayersToFollow.Add(Instantiate(PlayerPrefab[0]) as Player);
+
             RestartLevel(PlayersToFollow[0]);
 
+            FlyingSaucerInstance = GameObject.Instantiate(Resources.Load("FlyingSaucerGroup", typeof(FlyingSaucer))) as FlyingSaucer;
+            FlyingSaucerInstance.Landing(LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].StartingPosition.transform.position);
+
+            
             if (LoaderInstance != null)
             {
                 GuiInstance.transform.SetParent(LoaderInstance.transform);
             }
 
             GuiInstance.InitGui();
-            LevelLoaded = true;
         }
         else
         {
-            LevelLoaded = false;
-
-            PlayersToFollow[0].gameObject.SetActive(false);
+            Cutscene = true;
+            PlayersToFollow.Clear();
 
             if (LoaderInstance != null)
             {

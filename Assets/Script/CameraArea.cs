@@ -23,41 +23,11 @@ public class CameraArea : MonoBehaviour
         //Debug.Log("Cropping camera bounding box: " + BottomLeftRect + ", " + TopRightRect);
     }
 
-    public Vector3 GetCameraPos()
+    public Vector3 GetCroppedCameraPos(Vector3 position, Vector3 MaxDistance)
     {
-        int i;
-        Vector2 MaxDistance = Vector3.zero;
-        Vector2 NewCamRectangle = Vector3.zero;
         Vector2 BottomLeft;
         Vector2 TopRight;
-        List <float> x;
-        List <float> y;
-        x = new List<float>();
-        y = new List<float>();
-
-        Vector3 position = Vector3.zero;
-
-        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Count; i++)
-        {
-            position = position + MainScript.GetInstance().PlayersToFollow[i].transform.position;
-
-            x.Add(MainScript.GetInstance().PlayersToFollow[i].transform.position.x);
-            y.Add(MainScript.GetInstance().PlayersToFollow[i].transform.position.y);
-
-            //Debug.Log("Player Position[" + i + "]: " + x[i] + ", " + y[i]);
-
-        }
-        if (MainScript.GetInstance().PlayersToFollow.Count == 0)
-        {
-            //return Vector3.zero;
-            MaxDistance = MainScript.GetInstance().levelDefinitionScript.StartingPosition.transform.position;
-        }
-        else
-        {
-            MaxDistance.x = (x.Max() - x.Min()) / 2 + 12;
-            MaxDistance.y = (y.Max() - y.Min()) / 2 + 12;
-            //Debug.Log("Max Distance Distance Between Players: " + MaxDistance + " Players: " + x.Count);
-        }
+        Vector2 NewCamRectangle = Vector3.zero;
 
         if (MaxDistance.y > defaultCamSize)
         {
@@ -75,13 +45,14 @@ public class CameraArea : MonoBehaviour
                 NewCamRectangle.y = NewCamRectangle.x / Camera.main.aspect;
                 //Debug.Log("Camera Vertically cropped");
             }
-        } else
+        }
+        else
         {
             NewCamRectangle.y = defaultCamSize;
             NewCamRectangle.x = Camera.main.aspect * NewCamRectangle.y;
         }
-        
-        
+
+
 
         if (MaxDistance.x > defaultCamSize * Camera.main.aspect && NewCamRectangle.y >= defaultCamSize)
         {
@@ -116,7 +87,7 @@ public class CameraArea : MonoBehaviour
 
         BottomLeft.x = BottomLeft.x + CamHorzExtent;
         BottomLeft.y = BottomLeft.y + CamVertExtent;
-        
+
         TopRight.x = TopRight.x - CamHorzExtent;
         TopRight.y = TopRight.y - CamVertExtent;
         if (TopRight.x < BottomLeft.x)
@@ -129,7 +100,7 @@ public class CameraArea : MonoBehaviour
             TopRight.y = BoundingBoxCollider.bounds.center.y;
             BottomLeft.y = TopRight.y;
         }
-        
+
 
         //Camera.main.CalculateFrustumCorners
 
@@ -140,4 +111,45 @@ public class CameraArea : MonoBehaviour
 
         return position;
     }
+
+
+    public Vector3 GetCameraPos()
+    {
+        int i;
+        Vector3 MaxDistance = Vector3.zero;
+        List<float> x;
+        List<float> y;
+
+        x = new List<float>();
+        y = new List<float>();
+
+        Vector3 position = Vector3.zero;
+
+        for (i = 0; i < MainScript.GetInstance().PlayersToFollow.Count; i++)
+        {
+            position = position + MainScript.GetInstance().PlayersToFollow[i].transform.position;
+
+            x.Add(MainScript.GetInstance().PlayersToFollow[i].transform.position.x);
+            y.Add(MainScript.GetInstance().PlayersToFollow[i].transform.position.y);
+
+            //Debug.Log("Player Position[" + i + "]: " + x[i] + ", " + y[i]);
+
+        }
+        if (MainScript.GetInstance().PlayersToFollow.Count == 0)
+        {
+            //return Vector3.zero;
+            position = MainScript.GetInstance().LoaderInstance.LevelDefinitions[MainScript.GetInstance().LoaderInstance.ActiveLevelId].StartingPosition.transform.position;
+            x.Add(MainScript.GetInstance().LoaderInstance.LevelDefinitions[MainScript.GetInstance().LoaderInstance.ActiveLevelId].StartingPosition.transform.position.x);
+            y.Add(MainScript.GetInstance().LoaderInstance.LevelDefinitions[MainScript.GetInstance().LoaderInstance.ActiveLevelId].StartingPosition.transform.position.y);
+        }
+
+        MaxDistance.x = (x.Max() - x.Min()) / 2 + 12;
+        MaxDistance.y = (y.Max() - y.Min()) / 2 + 12;
+
+        //Debug.Log("Max Distance Distance Between Players: " + MaxDistance + " Players: " + x.Count);
+
+        return GetCroppedCameraPos(position, MaxDistance);
+    }
+
+        
 }
