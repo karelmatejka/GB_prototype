@@ -21,8 +21,6 @@ public class JumpingWall : MonoBehaviour {
     public void ActivateWall(bool active)
     {
         int i;
-        Color c;
-
         for (i = 0; i < WallEdgeCollider.Length; i++)
         {
             if (active)

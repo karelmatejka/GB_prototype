@@ -177,7 +177,7 @@ public class MovingObstacle : MonoBehaviour {
             //Debug.Log("UnlinkingParent: " + this.gameObject);
             //Debug.Log(" LinkedParent: " + MainScript.GetInstance().PlayersToFollow[i].transform.parent);
 
-            if (MainScript.GetInstance().PlayersToFollow[i].transform.parent != null && MainScript.GetInstance().PlayersToFollow[i].transform.parent.gameObject == this.gameObject)
+            if (MainScript.GetInstance().PlayersToFollow[i].transform.parent != null && MainScript.GetInstance().PlayersToFollow[i].LinkedMovingPlatform.gameObject == this.gameObject)
             {
                 MainScript.GetInstance().PlayersToFollow[i].SetJump(true);
             }

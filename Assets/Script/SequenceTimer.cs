@@ -102,8 +102,7 @@ public class SequenceTimer : MonoBehaviour {
                 {
                     if (ShootingEvent[j].TriggerID == TimeTriggers[i].TriggerId)
                     {
-                        GameObject projectile;
-                        projectile = MainScript.GetInstance().InstantiateObject(ShootingEvent[j].ProjectilePrefab, this.transform.position, this.transform.rotation);
+                        MainScript.GetInstance().InstantiateObject(ShootingEvent[j].ProjectilePrefab, this.transform.position, this.transform.rotation);
                     }
                 }
 

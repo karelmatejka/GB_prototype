@@ -1,21 +1,23 @@
 fileFormatVersion: 2
-guid: c8d5c3986b5680940ba4957900373488
-timeCreated: 1486909230
+guid: 1c908efa5b14497408b8f78c5cda51b4
+timeCreated: 1513437071
 licenseType: Free
 TrueTypeFontImporter:
+  externalObjects: {}
   serializedVersion: 4
   fontSize: 60
   forceTextureCase: -1
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Existence
+  fontName: DBXLNightfever
   fontNames:
-  - Existence
+  - DBXLNightfever
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

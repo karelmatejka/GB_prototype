@@ -6,6 +6,7 @@ public class Coin : MonoBehaviour {
 
     public Animator anim;
     public int ID;
+    public bool isFuel = false;
     public AudioSource[] CollectCoinSounds;
     
     // Use this for initialization
@@ -23,12 +24,17 @@ public class Coin : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag == "PlayerEnvelope")
+        if (other.gameObject.tag == "PlayerEnvelope" && !MainScript.GetInstance().Cutscene)
         {
-            MainScript.GetInstance().LoaderInstance.LevelDefinitions[MainScript.GetInstance().LoaderInstance.ActiveLevelId].RemoveCoin(ID);
-            MainScript.GetInstance().GuiInstance.AddCoins(1);
+            if (!isFuel)
+            {
+                MainScript.GetInstance().LoaderInstance.LevelDefinitions[MainScript.GetInstance().LoaderInstance.ActiveLevelId].CollectCoin(ID);
+            }
+            else
+            {
+                MainScript.GetInstance().LoaderInstance.LevelDefinitions[MainScript.GetInstance().LoaderInstance.ActiveLevelId].CollectFuel(this.transform.position);
+            }
             MainScript.GetInstance().PlayRandomSound(CollectCoinSounds, this.transform.position, false);
-
             this.gameObject.SetActive(false);
         }
     }

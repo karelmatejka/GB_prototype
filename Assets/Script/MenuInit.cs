@@ -14,8 +14,8 @@ public class MenuInit : MonoBehaviour {
     {
         Canvas uiCanvas;
         uiCanvas = this.GetComponent<Canvas>();
-        Debug.Log("Camera: " + MainScript.GetInstance().LoaderInstance.LoaderCam);
-        Debug.Log("Set for canvas: " + uiCanvas.gameObject);
+        //Debug.Log("Camera: " + MainScript.GetInstance().LoaderInstance.LoaderCam);
+        //Debug.Log("Set for canvas: " + uiCanvas.gameObject);
         uiCanvas.worldCamera = MainScript.GetInstance().LoaderInstance.LoaderCam;
     }
 }

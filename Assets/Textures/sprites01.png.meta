@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: daf2480b5bd3dee41a98940942ef1c00
-timeCreated: 1511918455
+timeCreated: 1517154114
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -22,6 +22,14 @@ TextureImporter:
     21300030: SpritesShootingSpikeBackBricks
     21300032: SpritesSpikeGlow
     21300034: SpritesDiamondOutline
+    21300036: spritesFuelSlot
+    21300038: spritesFuelSlotFull
+    21300040: spritesFuelSlotEmpty
+    21300042: spritesGuiStrip
+    21300044: spritesCanisterFull
+    21300046: spritesCanisterEmpty
+    21300048: spritesGrass
+  externalObjects: {}
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -30,6 +38,8 @@ TextureImporter:
     linearTexture: 0
     fadeOut: 0
     borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
     mipMapFadeDistanceStart: 1
     mipMapFadeDistanceEnd: 3
   bumpmap:
@@ -45,10 +55,13 @@ TextureImporter:
   textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
+    serializedVersion: 2
     filterMode: 2
     aniso: -1
     mipBias: -1
-    wrapMode: 1
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -70,6 +83,7 @@ TextureImporter:
   platformSettings:
   - buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
@@ -78,6 +92,7 @@ TextureImporter:
     overridden: 0
   - buildTarget: Standalone
     maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
@@ -86,6 +101,7 @@ TextureImporter:
     overridden: 0
   - buildTarget: Android
     maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
@@ -107,6 +123,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 31, y: 31, z: 31, w: 31}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesPlayerRectangle
@@ -120,6 +137,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 18, y: 19, z: 20, w: 19}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesCircle
@@ -133,6 +151,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesRectangleBlink
@@ -146,6 +165,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesPlayerLeg
@@ -159,6 +179,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesPlayerShadow
@@ -172,6 +193,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesObstacleDummy
@@ -185,6 +207,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 9, y: 9, z: 9, w: 9}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesSpikeBack
@@ -198,6 +221,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesSpikeFront
@@ -211,6 +235,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 47, y: 18, z: 49, w: 101}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesSpikeAnim
@@ -224,6 +249,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 16, z: 0, w: 63}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesShootingSpike
@@ -237,6 +263,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesShootingSpikeFrontMouth
@@ -250,6 +277,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.7986805}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesShootingSpikeBackMouthA
@@ -263,6 +291,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.58378446}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesShootingSpikeBackMouthB
@@ -276,6 +305,7 @@ TextureImporter:
       pivot: {x: 0.5045079, y: 0.6017393}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesShootingSpikeFrontBody
@@ -289,6 +319,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesShootingSpikeBackBricks
@@ -302,6 +333,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesSpikeGlow
@@ -315,12 +347,13 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
       name: SpritesDiamondOutline
       rect:
         serializedVersion: 2
-        x: 1321
+        x: 1320
         y: 1983
         width: 61
         height: 62
@@ -328,8 +361,108 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesFuelSlot
+      rect:
+        serializedVersion: 2
+        x: 1422
+        y: 1950
+        width: 87
+        height: 89
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesFuelSlotFull
+      rect:
+        serializedVersion: 2
+        x: 1529
+        y: 1993
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesFuelSlotEmpty
+      rect:
+        serializedVersion: 2
+        x: 1529
+        y: 1931
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesGuiStrip
+      rect:
+        serializedVersion: 2
+        x: 1643
+        y: 1878
+        width: 365
+        height: 166
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 145, y: 0, z: 147, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesCanisterFull
+      rect:
+        serializedVersion: 2
+        x: 1910
+        y: 1728
+        width: 135
+        height: 140
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesCanisterEmpty
+      rect:
+        serializedVersion: 2
+        x: 1770
+        y: 1728
+        width: 135
+        height: 140
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesGrass
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 1911
+        width: 31
+        height: 54
+      alignment: 9
+      pivot: {x: 0.50792474, y: 0.19036414}
+      border: {x: 0, y: 20, z: 0, w: 19}
+      outline: []
+      physicsShape: []
       tessellationDetail: 0
     outline: []
+    physicsShape: []
   spritePackingTag: 
   userData: 
   assetBundleName: 

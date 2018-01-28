@@ -9,10 +9,12 @@ public class MainScript : MonoBehaviour {
     [HideInInspector] public List<Player> PlayersToFollow;
     //[HideInInspector] public LevelDefinition levelDefinitionScript;
     public GameObject BloodInstance;
+    public GameObject CoinPrefab;
     public GameObject FuelPrefab;
     public AudioSource[] ButtonSelectSound;
     public Player[] PlayerPrefab;
-    public FlyingSaucer FlyingSaucerInstance;
+    public GameObject MoveToPositionTrigger;
+    [HideInInspector] public FlyingSaucer FlyingSaucerInstance;
 
     [HideInInspector] public Loader LoaderInstance = null;
 
@@ -28,7 +30,7 @@ public class MainScript : MonoBehaviour {
     [HideInInspector] public CameraArea CameraAreaScript;
 
     //-------------SAVE-------------------
-    public int Coins = 0;
+    public int AllCoins = 0;
     //------------------------------------
 
 
@@ -90,14 +92,99 @@ public class MainScript : MonoBehaviour {
 
 
         this.transform.SetParent(MainScript.GetInstance().LoaderInstance.transform);
-        InitLevel(true);
+        InitLevel(true, false);
     }
 
+    public IEnumerator MoveCamera(Vector3 end)
+    {
+        Vector3 velocity = Vector3.zero;
+        while (Vector3.Distance(Camera.main.transform.position, end) > 0.1f)
+        {
+            Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, end, ref velocity, 0.3f);
+
+            yield return null;
+        }
+    }
+
+    public IEnumerator DeathAnimation(Player player)
+    {
+        
+        int i;
+        GameObject blood;
+        Cutscene = true;
+        bool goal;
+
+        goal = LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].Goal;
+
+        blood = MainScript.GetInstance().InstantiateObject(MainScript.GetInstance().BloodInstance, player.transform.position, Quaternion.identity);
+        MainScript.GetInstance().PlayRandomSound(player.KillSounds, this.transform.position, false);
+        Destroy(blood.gameObject, 1);
+        player.PlayerBody.gameObject.SetActive(false);
+
+        yield return new WaitForSeconds(0.5f);
+
+        SetPlayerPos(player, true);
+
+        StartCoroutine(MoveCamera(CameraAreaScript.GetCameraPos()));
+
+        yield return new WaitForSeconds((CameraAreaScript.GetCameraPos() - Camera.main.transform.position).magnitude * 0.01f + 0.05f);
+
+        LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].ReappearFuel();
+        FlyingSaucerInstance.ResetFuelIndicators(LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].FuelToCollect);
+
+        //yield return new WaitForSeconds(0.1f);
+
+        if (goal)
+        {
+            FlyingSaucerInstance.CloseDoor();
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        player.PlayerBody.gameObject.SetActive(true);
+        player.SetJump(false);
+
+        
+
+        for (i = 0; i < 5; i++)
+        {
+            player.PlayerBody.gameObject.SetActive(false);
+            yield return new WaitForSeconds(0.05f);
+            player.PlayerBody.gameObject.SetActive(true);
+            yield return new WaitForSeconds(0.05f);
+        }
+        Cutscene = false;
+        yield return null;
+    }
 
     public void RestartLevel(Player player)
     {
-        player.transform.position = LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].StartingPosition.transform.position - Vector3.right * 1 + Vector3.right * 2 * (player.ControllerIndex - 1);
-        Debug.Log("Player Starting Position: " + player.transform.position);
+        if (!Cutscene)
+        {
+            StartCoroutine(DeathAnimation(player));
+        }
+    }
+
+    public void FinishLevel(Player player)
+    {
+        StartCoroutine(FlyingSaucerInstance.FlyAwayAnimation());
+    }
+
+    public Vector3 GetPlayerStartPos (Player player, bool death)
+    {
+        float deathShift = 0;
+        if (death)
+        {
+            deathShift = 1.05f;
+        }
+        return LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].StartingPosition.transform.position - Vector3.right * 1 + Vector3.right * 2 * (player.ControllerIndex - 1) - Vector3.right * deathShift;
+    }
+
+    public void SetPlayerPos(Player player, bool death)
+    {
+        
+        player.transform.position = GetPlayerStartPos(player, death);
+        //Debug.Log("Player Starting Position: " + player.transform.position);
+        player.transform.SetParent(CameraAreaScript.transform);
         player.InitPlayer(false);
     }
 
@@ -121,11 +208,13 @@ public class MainScript : MonoBehaviour {
         Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position, CameraAreaScript.GetCameraPos(), ref velocity, 0.1f);
     }
 
-    public void InitLevel(bool init)
+    public void InitLevel(bool init, bool openMenu)
     {   
         if (init)
         {
             Cutscene = true;
+
+            GuiInstance.InitGui();
 
             CameraAreaScript = GameObject.FindObjectOfType(typeof(CameraArea)) as CameraArea;
 
@@ -137,13 +226,15 @@ public class MainScript : MonoBehaviour {
             PlayersToFollow = new List<Player>();
 
             PlayersToFollow.Add(Instantiate(PlayerPrefab[0]) as Player);
-
-            RestartLevel(PlayersToFollow[0]);
+            SetPlayerPos(PlayersToFollow[0], false);
 
             FlyingSaucerInstance = GameObject.Instantiate(Resources.Load("FlyingSaucerGroup", typeof(FlyingSaucer))) as FlyingSaucer;
+            FlyingSaucerInstance.ShowFuelIndicators(LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].FuelToCollect);
             FlyingSaucerInstance.Landing(LoaderInstance.LevelDefinitions[LoaderInstance.ActiveLevelId].StartingPosition.transform.position);
 
             
+
+
             if (LoaderInstance != null)
             {
                 GuiInstance.transform.SetParent(LoaderInstance.transform);
@@ -158,7 +249,7 @@ public class MainScript : MonoBehaviour {
 
             if (LoaderInstance != null)
             {
-                StartCoroutine(LoaderInstance.UnLoadLevel());
+                StartCoroutine(LoaderInstance.UnLoadLevel(openMenu));
             }
         }
     }
@@ -181,13 +272,13 @@ public class MainScript : MonoBehaviour {
             for (i = 0; i < PlayersToFollow.Count; i++)
             {
                 distance = (where - PlayersToFollow[i].transform.position).magnitude;
-                volume = volume + 40 - distance;
+                volume = volume + 20 - distance;
             }
         }
         if (volume > 0)
         {
             aSource = Instantiate(audiofield[r]) as AudioSource;
-            if (is3d) aSource.volume = aSource.volume * volume / 40 * GlobalSoundVolume;
+            if (is3d) aSource.volume = aSource.volume * volume / 20 * GlobalSoundVolume;
             Destroy(aSource.gameObject, aSource.clip.length);
         }
         

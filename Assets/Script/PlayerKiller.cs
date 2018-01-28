@@ -14,23 +14,22 @@ public class PlayerKiller : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D coll)
     {
-        GameObject blood;
         GameObject explosion;
+
         if (coll.tag == "PlayerEnvelope")
         {
-            //Debug.Log("Killed entity:" + coll.tag);
-            blood = MainScript.GetInstance().InstantiateObject(MainScript.GetInstance().BloodInstance, coll.transform.position, Quaternion.identity);
-            MainScript.GetInstance().PlayRandomSound(coll.gameObject.GetComponent<Player>().KillSounds, this.transform.position, false);
-            Destroy(blood.gameObject, 1);
+            //Debug.Log("Killed entity:" + coll.tag);            
             MainScript.GetInstance().RestartLevel(coll.gameObject.GetComponent<Player>());
         }
         if (DestroyedOnTouch && coll.tag != "CameraArea" && DestroyOnTouchDelay < 0)
         {
             //Debug.Log("Entity hit:" + coll.gameObject);
-            explosion = MainScript.GetInstance().InstantiateObject(DestroyedPrefab, this.transform.position, Quaternion.identity);
-            Destroy(explosion.gameObject, 1);
-            Destroy(this.gameObject);
-            
+            if (!MainScript.GetInstance().Cutscene || coll.tag != "PlayerEnvelope")
+            {
+                explosion = MainScript.GetInstance().InstantiateObject(DestroyedPrefab, this.transform.position, Quaternion.identity);
+                Destroy(explosion.gameObject, 1);
+                Destroy(this.gameObject);
+            }
         }
     }
 }

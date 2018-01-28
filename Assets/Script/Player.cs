@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
     public AudioSource[] KillSounds;
 
     public Animator PlayerAnim;
-    public GameObject Shadow;
+    public GameObject PlayerBody;
     public JumpingWall[] JumpingWalls;
 
     public Image PlayerImage;
@@ -45,10 +45,12 @@ public class Player : MonoBehaviour
     float JumpingRadiusUp;
     float JumpingRadiusDown;
     public bool Walking;
+    public bool IsMovingToPosition;
+    float MovingToPositionSpeed;
+    [HideInInspector] public Rigidbody2D LinkedMovingPlatform;
 
     Vector2 joypad;
-    Vector2 lastjoypad;
-    int ButtonFire;
+    public int ButtonFire;
     [HideInInspector] public bool GoingFromMenu = false;
 
     // Use this for initialization
@@ -91,11 +93,11 @@ public class Player : MonoBehaviour
         ActualGravity = Vector2.zero;
         GravityAndJump = Vector2.zero;
         ComputedGravityVector = Vector2.down * GravityConstant;
+        LinkedMovingPlatform = null;
 
         SetJump(false);
         JumpingTime = JumpingTimeMinus;
         joypad = Vector2.zero;
-        lastjoypad = Vector2.zero;
         ButtonFire = 0;
 
         SetJumpingWallCollidersActive(true, null);
@@ -113,6 +115,13 @@ public class Player : MonoBehaviour
         finalvector.y = - gravity.x * param;
 
         return finalvector;
+    }
+    
+    public void MoveToPosition(Vector3 endPos, float speed)
+    {
+        MainScript.GetInstance().MoveToPositionTrigger.transform.position = endPos;
+        IsMovingToPosition = true;
+        MovingToPositionSpeed = speed;
     }
 
     void Update()
@@ -173,6 +182,14 @@ public class Player : MonoBehaviour
          
             JumpingTime = JumpingTimeMinus;
             GravityAndJump = ActualGravity;
+
+            if (IsMovingToPosition)
+            {
+                joypad = ProjectedVectorToSurface(MainScript.GetInstance().MoveToPositionTrigger.transform.position - this.transform.position, ComputedGravityVector).normalized * MovingToPositionSpeed;
+                Debug.DrawRay(this.transform.position, MainScript.GetInstance().MoveToPositionTrigger.transform.position - this.transform.position, Color.green);
+                Debug.DrawRay(this.transform.position, movementVector, Color.blue);
+            }
+
             movementVector = ProjectedVectorToSurface(joypad, ComputedGravityVector) * SpeedConstant;
         }
         
@@ -182,9 +199,7 @@ public class Player : MonoBehaviour
             if (!Jumping && !GoingFromMenu)
             {
                 //jump
-                GravityAndJump += -ActualGravity.normalized * JumpConstant;
-                SetJump(true);
-                MainScript.GetInstance().PlayRandomSound(JumpSounds, this.transform.position, false); 
+                Jump(); 
             }            
         }
         if (ButtonFire == 0 && GoingFromMenu)
@@ -196,24 +211,25 @@ public class Player : MonoBehaviour
 
         if (finalVector.magnitude > MaxSpeed) finalVector = finalVector.normalized * MaxSpeed;
 
-        PlayerRigidBody.velocity = finalVector;
-
-        /*Debug.DrawRay(this.transform.position, movementVector, Color.green);
-        Debug.DrawRay(this.transform.position, ActualGravity, Color.blue);
-        Debug.DrawRay(this.transform.position, PlayerRigidBody.velocity, Color.red);*/
-
-        if (PlayerRigidBody.transform.parent != null && PlayerRigidBody.transform.parent.tag == "MovingColliders" && !Jumping)
+        if (LinkedMovingPlatform != null && !Jumping)
         {
-            PlayerRigidBody.velocity += PlayerRigidBody.transform.parent.GetComponent<MovingObstacle>().MovingRigidBody.velocity;
+            PlayerRigidBody.velocity = finalVector + LinkedMovingPlatform.velocity;
+            Debug.Log("Moving Platform Velocity: " + LinkedMovingPlatform.velocity);
         }
         else if (!Jumping && joypad.magnitude == 0)
         {
             PlayerRigidBody.velocity = Vector2.zero;
         }
-
-
-        
-
+        else
+        {
+            PlayerRigidBody.velocity = finalVector;
+        }
+    }
+    public void Jump()
+    {
+        GravityAndJump += -ActualGravity.normalized * JumpConstant;
+        SetJump(true);
+        MainScript.GetInstance().PlayRandomSound(JumpSounds, this.transform.position, false);
     }
 
     public void SetJump(bool anim)
@@ -225,7 +241,7 @@ public class Player : MonoBehaviour
         SetJumpingWallCollidersActive(true, null);
         if (anim) PlayerAnim.SetTrigger("Jump");
         this.transform.SetParent(null);
-        Debug.Log("Jump Set Anim: " + anim);
+        //Debug.Log("Jump Set Anim: " + anim);
     }
 
     void SetJumpingWallCollidersActive(bool active, JumpingWall stayActive)
@@ -249,19 +265,31 @@ public class Player : MonoBehaviour
         {
             Walking = false;
             PlayerAnim.SetTrigger("Idle");
-            Debug.Log("Idle");
+            //Debug.Log("Idle");
         }
         else if (Walking && movementVector.magnitude < 1 && !Jumping && ButtonFire == 0)
         {
             Walking = false;
             PlayerAnim.SetTrigger("Idle");
-            Debug.Log("Idle");
+            //Debug.Log("Idle");
         }
         else if (!Walking && movementVector.magnitude >= 1 && !Jumping && ButtonFire == 0)
         {
             PlayerAnim.SetTrigger("Move");
             Walking = true;
-            Debug.Log("Moving");
+            //Debug.Log("Moving");
+        }
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "MoveToPositionPlayer" && IsMovingToPosition && !Jumping)
+        {
+            IsMovingToPosition = false;
+            joypad = Vector2.zero;
+            transform.position = other.transform.position + Vector3.up * 1.05f;
+            PlayerRigidBody.velocity = Vector3.zero;
+            Debug.Log("PLAYER POSITION REACHED");
         }
     }
 
@@ -275,8 +303,16 @@ public class Player : MonoBehaviour
         {
             return;
         }
-        
-        this.transform.SetParent(coll.gameObject.transform);
+
+        //this.transform.SetParent(coll.gameObject.transform);
+        if (coll.gameObject.tag == "MovingColliders")
+        {
+            LinkedMovingPlatform = coll.gameObject.GetComponent<Rigidbody2D>();
+        }
+        else
+        {
+            LinkedMovingPlatform = null;
+        }
         if (coll.gameObject.tag == "JumpingColliders")
         {
             SetJumpingWallCollidersActive(false, coll.gameObject.GetComponent<JumpingWall>());
@@ -336,10 +372,10 @@ public class Player : MonoBehaviour
                 radius = 2;
             }
 
-            hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)), radius);
+            hit = Physics2D.RaycastAll(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)), radius, 1 << LayerMask.NameToLayer("Wall"));
             Debug.DrawRay(this.transform.position, new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)) * radius, Color.green);
 
-            if (hit.Length > 0 && hit[0].transform.tag != "PlayerEnvelope" && hit[0].transform.tag != "SpikeColliders")
+            if (hit.Length > 0)
             {
                 ////Debug.Log("Hit:" + impactPoints[i].wallCollider);
                 Debug.DrawLine(new Vector3(hit[0].point.x, hit[0].point.y - 1, 0), new Vector3(hit[0].point.x, hit[0].point.y + 1, 0), Color.red, Time.deltaTime, false);
@@ -376,9 +412,7 @@ public class Player : MonoBehaviour
         if (SumOfGravity == Vector2.zero)
         {
             return ComputedGravityVector;
-            //return Vector2.down * GravityConstant;
         }
-
         return SumOfGravity;
     }
 
@@ -409,12 +443,7 @@ public class Player : MonoBehaviour
             }            
         }
 
-        if (joypad.magnitude >= 0.1)
-        {
-            lastjoypad = joypad;
-            //Debug.Log("WalkingSet");
-        }
-        else
+        if (joypad.magnitude < 0.1)
         {
             joypad = Vector2.zero;
         }
@@ -425,7 +454,7 @@ public class Player : MonoBehaviour
         if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Jump.WasPressed)
         {
             ButtonFire = 2;
-            Debug.Log("JumpSet for controller: " + ControllerIndex);
+            //Debug.Log("JumpSet for controller: " + ControllerIndex);
         }
         if (MainScript.GetInstance().LoaderInstance.InputAdapter.actions.Jump.WasReleased)
         {
@@ -435,22 +464,11 @@ public class Player : MonoBehaviour
 
     void GetControls()
     {
-        if (MainScript.GetInstance().Cutscene)
+        if (MainScript.GetInstance().Cutscene || IsMovingToPosition)
         {
             return;
         }
-
         SetControlValues();
-
-        /*if (MainScript.GetInstance().LoaderInstance == null)
-        {
-            SetControlValues();
-        }
-        else if (MainScript.GetInstance().LoaderInstance.activemenu == -1)
-        {
-            SetControlValues();
-        }
-        */
     }
 
 }

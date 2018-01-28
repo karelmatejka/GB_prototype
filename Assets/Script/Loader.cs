@@ -43,9 +43,7 @@ public class Loader : MonoBehaviour {
 
         FeedLevelNames();
 
-        FeedLevelData();
-
-        MainScript.GetInstance().GuiInstance.InitGui();       
+        FeedLevelData();      
 
         if (GameObject.Find("EventSystem") == null)
         {
@@ -59,7 +57,6 @@ public class Loader : MonoBehaviour {
         {
             InitMenu();
         }
-
     }
 
 
@@ -120,11 +117,11 @@ public class Loader : MonoBehaviour {
 
     public void OpenMenu(int menuID)
     {
-        Debug.Log("Opening menu: " + menuID);
+        //Debug.Log("Opening menu: " + menuID);
         MenuField[menuID].MenuInstance = MenuInit.Instantiate(MenuField[menuID].MenuPrefab);
         MenuField[menuID].MenuInstance.transform.SetParent(this.transform);
         StartCoroutine(EnableMenu(menuID, true));
-        
+        MainScript.GetInstance().GuiInstance.InitGui();
     }
 
     public void CloseMenu(int menuID)
@@ -150,13 +147,13 @@ public class Loader : MonoBehaviour {
                 {
                     MenuField[menuID].MenuInstance.buttons[i].onClick.AddListener(() => ButtonClicked(tempInt));
                     MenuField[menuID].MenuInstance.buttons[i].interactable = true;
-                    Debug.Log("Button added to menu: " + menuID + " ID: " + i);
+                    //Debug.Log("Button added to menu: " + menuID + " ID: " + i);
                 }
                 else
                 {
                     MenuField[menuID].MenuInstance.buttons[i].onClick.RemoveListener(() => ButtonClicked(tempInt));
                     MenuField[menuID].MenuInstance.buttons[i].interactable = false;
-                    Debug.Log("Button removed from menu: " + menuID + " ID: " + i);
+                    //Debug.Log("Button removed from menu: " + menuID + " ID: " + i);
                 }
             }
 
@@ -174,7 +171,7 @@ public class Loader : MonoBehaviour {
                     }
                     else
                     {
-                        Debug.Log("Entering Level Selector From Game");
+                        //Debug.Log("Entering Level Selector From Game");
                         for (i = 0; i < LevelNames.Count; i++)
                         {
                             if (LevelNames[i] == ActiveLevel)
@@ -189,11 +186,11 @@ public class Loader : MonoBehaviour {
                     MenuField[menuID].MenuInstance.previousbutton.Select();
                 }
                 activemenu = menuID;
-                Debug.Log("Menu ID displayed: " + activemenu);
+                //Debug.Log("Menu ID displayed: " + activemenu);
             }
             else
             {
-                Debug.Log("Menu ID hidden: " + activemenu);
+                //Debug.Log("Menu ID hidden: " + activemenu);
                 activemenu = -1;
             }
 
@@ -207,54 +204,54 @@ public class Loader : MonoBehaviour {
 
     public void ButtonClicked(int buttonpressed)
     {
-        Debug.Log("ButtonPressed in menu: " + activemenu + " ID: " + buttonpressed);
+        //Debug.Log("ButtonPressed in menu: " + activemenu + " ID: " + buttonpressed);
         if (!menuclicked)
         {
             MenuField[activemenu].MenuInstance.previousbutton = MenuField[activemenu].MenuInstance.buttons[buttonpressed];
             menuclicked = true;
-            if (activemenu == 0) //Main menu
+            if (activemenu == 0) //Main menu ---------------------
             {
-                if (buttonpressed == 0) //Start
+                if (buttonpressed == 0) //Start pressed
                 {
                     //StartCoroutine(FadeBetweenMenus(0, 3));
                     CloseMenu(0);
                     OpenMenu(3);
                 }
-                else if (buttonpressed == 1) //Config
+                else if (buttonpressed == 1) //Config pressed
                 {
                     menuclicked = false;
                 }
-                else if (buttonpressed == 2)  //Exit
+                else if (buttonpressed == 2)  //Exit pressed
                 {
                     StartCoroutine(EnableMenu(0, false));
                     OpenMenu(2);
                 }
             }
-            else if (activemenu == 1) //Pause menu
+            else if (activemenu == 1) //Pause menu ---------------------
             {
-                if (buttonpressed == 0) //Yes
+                if (buttonpressed == 0) //Yes pressed
                 {
-                    MainScript.GetInstance().InitLevel(false);
+                    MainScript.GetInstance().InitLevel(false, true);
                 }
-                else if (buttonpressed == 1) //No
+                else if (buttonpressed == 1) //No pressed
                 {
                     ResumeGame();
                 }
             }
-            else if (activemenu == 2) //Confirm Exit Game
+            else if (activemenu == 2) //Confirm Exit Game ---------------------
             {
-                if (buttonpressed == 0) //Yes
+                if (buttonpressed == 0) //Yes pressed
                 {
                     menuclicked = false;
                     QuitGame();                    
                 }
-                else if (buttonpressed == 1) //No
+                else if (buttonpressed == 1) //No pressed
                 {
                     CloseMenu(2);
                     StartCoroutine(EnableMenu(0, true));
                 }
             }
-            else if (activemenu == 3) //Level Selector
+            else if (activemenu == 3) //Level Selector ---------------------
             {
                 int i;
                 for (i = 0; i < MenuField[3].MenuInstance.buttons.Length; i++)
@@ -263,6 +260,23 @@ public class Loader : MonoBehaviour {
                     {
                         LoadLevel(i);
                     }
+                }
+            }
+            else if (activemenu == 4) //Reward Screen ---------------------
+            {
+                if (buttonpressed == 0) //Next Level
+                {
+                    MainScript.GetInstance().InitLevel(false, false);
+                    LoadLevel(ActiveLevelId + 1);
+                }
+                else if (buttonpressed == 1) //Replay Level
+                {
+                    MainScript.GetInstance().InitLevel(false, false);
+                    LoadLevel(ActiveLevelId);
+                }
+                else if (buttonpressed == 2) //LevelSelect
+                {
+                    MainScript.GetInstance().InitLevel(false, true);
                 }
             }
         }
@@ -278,6 +292,7 @@ public class Loader : MonoBehaviour {
             MainScript.GetInstance().PlayersToFollow[i].GoingFromMenu = true;
             Debug.Log("GoingFromMenu");
         }
+        MainScript.GetInstance().GuiInstance.InitGui();
     }
 
     public void LoadLevel(int level)
@@ -290,7 +305,7 @@ public class Loader : MonoBehaviour {
         Application.Quit();
     }
 
-    public IEnumerator UnLoadLevel()
+    public IEnumerator UnLoadLevel(bool openMenu)
     {
         StartCoroutine(EnableMenu(1, false));
         MainScript.GetInstance().GuiInstance.Fade(true);
@@ -299,6 +314,7 @@ public class Loader : MonoBehaviour {
         {
             yield return null;
         }
+        CloseMenu(4);
 
         AsyncOperation async;
         Debug.Log("Unloading the level: " + ActiveLevel);
@@ -316,7 +332,10 @@ public class Loader : MonoBehaviour {
         LevelDefinitions[ActiveLevelId].DisplayMap(false);
 
         ResumeGame();
-        OpenMenu(3);
+        if (openMenu)
+        {
+            OpenMenu(3);
+        }
         MainScript.GetInstance().GuiInstance.Fade(false);
     }
 
@@ -324,7 +343,7 @@ public class Loader : MonoBehaviour {
     {
         AsyncOperation async;
 
-        StartCoroutine(EnableMenu(0, false));
+        StartCoroutine(EnableMenu(3, false));
 
         MainScript.GetInstance().GuiInstance.Fade(true);
 
@@ -334,6 +353,7 @@ public class Loader : MonoBehaviour {
         }
 
         CloseMenu(3);
+        CloseMenu(4);
 
         if (add)
         {
@@ -346,7 +366,7 @@ public class Loader : MonoBehaviour {
         async.allowSceneActivation = false;
         while (async.progress < 0.9f)
         {
-            var scaledPerc = 0.5f * async.progress / 0.9f;
+            //var scaledPerc = 0.5f * async.progress / 0.9f;
             //StatusText.text = "<Loading Map : " + LevelInfo.LevelName + " : " + (100f * scaledPerc).ToString("F0") + ">";
         }
 
@@ -364,7 +384,7 @@ public class Loader : MonoBehaviour {
         LoaderCam.transform.localPosition = Vector3.back * 150;
         ActiveLevel = LevelNames[level];
         ActiveLevelId = level;
-        MainScript.GetInstance().InitLevel(true);
+        MainScript.GetInstance().InitLevel(true, false);
         MainScript.GetInstance().GuiInstance.Fade(false);
     }
 
@@ -376,7 +396,7 @@ public class Loader : MonoBehaviour {
         for (i = 0; i < LevelNames.Count; i++)
         {
             str = "Levels/" + LevelNames[i];
-            Debug.Log("Map definition: " + str + " loaded");
+            //Debug.Log("Map definition: " + str + " loaded");
             LevelDefinitions.Add(GameObject.Instantiate(Resources.Load(str, typeof(LevelDefinition))) as LevelDefinition);
             LevelDefinitions[i].transform.SetParent(this.transform);
         }
